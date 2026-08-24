@@ -21,8 +21,20 @@ struct AscendApp: App {
 
 struct RootView: View {
     @EnvironmentObject private var store: AppStore
+    @State private var launching = true
 
     var body: some View {
+        ZStack {
+            content
+            if launching {
+                LaunchView { withAnimation(.easeOut(duration: 0.35)) { launching = false } }
+                    .transition(.opacity)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
         if !store.hasOnboarded {
             OnboardingView()
         } else {

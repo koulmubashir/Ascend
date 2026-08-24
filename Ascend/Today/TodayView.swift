@@ -46,6 +46,7 @@ struct TodayView: View {
                     .foregroundStyle(Color(.systemBackground))
             }
 
+            achievedAndPending
             exerciseList(for: workout)
             weekStrip
         }
@@ -112,6 +113,50 @@ struct TodayView: View {
                 .font(.caption.weight(.medium))
                 .foregroundStyle(Color.orange)
         }
+    }
+
+    /// What you have done and what is still owed, at a glance. The first thing
+    /// worth knowing on opening the app, so it sits above the exercise list.
+    private var achievedAndPending: some View {
+        let week = store.thisWeek
+        let done = week.filter { $0.status == .completed }
+        let pending = week.filter { $0.status == .upcoming || $0.status == .partiallyCompleted }
+        let trained = done.reduce(into: Set<MuscleRegion>()) { $0.formUnion($1.trainingDay.regions) }
+
+        return HStack(spacing: 12) {
+            summaryTile(
+                value: "\(done.count)",
+                label: done.count == 1 ? "session done" : "sessions done",
+                tint: done.isEmpty ? .secondary : .green
+            )
+            summaryTile(
+                value: "\(pending.count)",
+                label: "still to do",
+                tint: pending.isEmpty ? .green : .orange
+            )
+            summaryTile(
+                value: "\(trained.count)",
+                label: "muscles hit",
+                tint: trained.isEmpty ? .secondary : Color.orange
+            )
+        }
+    }
+
+    private func summaryTile(value: String, label: String, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(value)
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(tint)
+                .monospacedDigit()
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
     }
 
     private var weekStrip: some View {

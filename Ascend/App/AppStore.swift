@@ -100,6 +100,23 @@ final class AppStore: ObservableObject {
         syncNotifications()
     }
 
+    /// Builds a plan from the onboarding answers, using only exercises the
+    /// user's equipment allows.
+    func createRecommendedPlan(_ answers: PlanRecommender.Answers) {
+        let recommendation = PlanRecommender.recommend(answers)
+        let usable = PlanRecommender.library(library, filteredFor: answers.equipment)
+
+        let days = PlanBuilder.trainingDays(
+            forDaysPerWeek: recommendation.daysPerWeek,
+            library: usable
+        )
+        plan = WorkoutPlan(daysPerWeek: recommendation.daysPerWeek, trainingDays: days)
+        schedule = PlanBuilder.schedule(days: days, startingAfter: Date())
+        settings.equipment = answers.equipment
+        settings.experience = answers.experience
+        saveAndSync()
+    }
+
     /// Re-registers reminders and re-pushes the plan to the Watch. Expensive -
     /// call it when the schedule or settings change, not on every write.
     func syncNotifications() {
@@ -637,4 +654,8 @@ struct FeatureSettings: Codable, Equatable {
     var periodization = PeriodizationEngine.Settings()
     /// Automatic rep counting from wrist motion during a Watch workout.
     var repCountingEnabled = false
+    /// Kept from onboarding so exercise suggestions and swaps stay within what
+    /// the user can actually reach.
+    var equipment: PlanRecommender.Equipment = .fullGym
+    var experience: PlanRecommender.Experience = .returning
 }

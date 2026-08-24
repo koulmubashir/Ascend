@@ -15,6 +15,15 @@ extension AppStore {
         (library.all + customExercises).sorted { $0.name < $1.name }
     }
 
+    /// Only what the user's equipment allows. Custom exercises are always
+    /// included - if you added it yourself, you can evidently do it.
+    var availableExercises: [Exercise] {
+        let usable = library.all.filter {
+            PlanRecommender.isAvailable($0, with: settings.equipment)
+        }
+        return (usable + customExercises).sorted { $0.name < $1.name }
+    }
+
     func exercise(id: UUID) -> Exercise? {
         library.exercise(id: id) ?? customExercises.first { $0.id == id }
     }

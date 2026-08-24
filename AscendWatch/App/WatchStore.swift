@@ -36,9 +36,71 @@ final class WatchStore: NSObject, ObservableObject {
 
     override init() {
         super.init()
+        restore()
         guard let session else { return }
         session.delegate = self
         session.activate()
+    }
+
+    /// Brings back the plan, and a session if it is recent enough to still be
+    /// the one you are in.
+    private func restore() {
+        let restored = WatchStorage.load()
+        plan = restored.plan
+        pendingLogs = restored.pendingLogs
+        if let snapshot = restored.session { rebuildEngine(from: snapshot) }
+    }
+
+    private func persist() {
+        WatchStorage.save(plan: plan, session: snapshot, pendingLogs: pendingLogs)
+    }
+
+    /// Builds a plan on the Watch itself, for when the phone has never been
+    /// reachable. Uses the same PlanBuilder the phone does, so a plan made here
+    /// is indistinguishable from one made there.
+    func createLocalPlan(daysPerWeek: Int) {
+        let library = ExerciseLibrary.starter
+        let days = PlanBuilder.trainingDays(forDaysPerWeek: daysPerWeek, library: library)
+        let scheduled = PlanBuilder.schedule(days: days, startingAfter: Date())
+
+        plan = WatchSync.PlanSnapshot(
+            workouts: scheduled.map {
+                WatchSync.UpcomingWorkout(
+                    id: $0.id,
+                    scheduledDate: $0.scheduledDate,
+                    snapshot: WatchSync.SessionSnapshot(sessionID: UUID(), workout: $0)
+                )
+            },
+            repCountingEnabled: false
+        )
+        persist()
+        refreshComplication()
+    }
+
+    /// Rebuilds the state machine from a snapshot, shared by a fresh start and
+    /// a restore after the app was terminated.
+    private func rebuildEngine(from snapshot: WatchSync.SessionSnapshot) {
+        self.snapshot = snapshot
+        let planned = snapshot.exercises.enumerated().map { index, exercise in
+            PlannedExercise(
+                exercise: Exercise(
+                    id: exercise.id,
+                    name: exercise.name,
+                    group: .chest,
+                    regions: exercise.regions,
+                    defaultSets: exercise.targetSets,
+                    defaultReps: exercise.targetReps,
+                    defaultRestSeconds: exercise.restSeconds
+                ),
+                orderIndex: index,
+                targetSets: exercise.targetSets,
+                targetReps: exercise.targetReps,
+                restSeconds: exercise.restSeconds
+            )
+        }
+        var m = SessionStateMachine(exercises: planned)
+        _ = m.handle(.start)
+        machine = m
     }
 
     var currentExercise: WatchSync.ExerciseSnapshot? {
@@ -90,34 +152,11 @@ final class WatchStore: NSObject, ObservableObject {
     }
 
     func begin(_ snapshot: WatchSync.SessionSnapshot) {
-        self.snapshot = snapshot
         pendingLogs = []
+        rebuildEngine(from: snapshot)
         workout.start(sessionID: snapshot.sessionID)
         if plan?.repCountingEnabled == true { motion.start() }
-
-        // The Watch rebuilds PlannedExercise values from the snapshot so it can
-        // run the very same engine as the phone rather than a parallel one.
-        let planned = snapshot.exercises.enumerated().map { index, exercise in
-            PlannedExercise(
-                exercise: Exercise(
-                    id: exercise.id,
-                    name: exercise.name,
-                    group: .chest,          // unused on the Watch; regions drive the map
-                    regions: exercise.regions,
-                    defaultSets: exercise.targetSets,
-                    defaultReps: exercise.targetReps,
-                    defaultRestSeconds: exercise.restSeconds
-                ),
-                orderIndex: index,
-                targetSets: exercise.targetSets,
-                targetReps: exercise.targetReps,
-                restSeconds: exercise.restSeconds
-            )
-        }
-
-        var m = SessionStateMachine(exercises: planned)
-        _ = m.handle(.start)
-        machine = m
+        persist()
     }
 
     func completeSet(reps: Int, weightKg: Double?) {
@@ -134,6 +173,7 @@ final class WatchStore: NSObject, ObservableObject {
             weightKg: weightKg
         )
         pendingLogs.append(log)
+        persist()
         send(.setCompleted(log))
         // Counting restarts for the next set rather than accumulating.
         motion.resetForNextSet()
@@ -195,6 +235,7 @@ final class WatchStore: NSObject, ObservableObject {
         machine = nil
         pendingLogs = []
         stopRestTimer()
+        persist()
     }
 
     // MARK: - Rest timer and haptics
@@ -288,6 +329,7 @@ extension WatchStore: WCSessionDelegate {
                 self.clear()
             case let .planUpdated(plan):
                 self.plan = plan
+                self.persist()
                 self.refreshComplication()
             case .setCompleted, .sessionEnded, .requestSnapshot, .watchStartedSession:
                 // Phone-bound messages; nothing for the Watch to do.

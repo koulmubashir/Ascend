@@ -14,7 +14,7 @@ import sys
 
 root = pathlib.Path(__file__).resolve().parent
 html = (root / "bodymap.html").read_text()
-swift = (root.parent / "Packages/GymKit/Sources/GymKit/Models/MuscleRegion.swift").read_text()
+swift = (root.parent / "Packages/AscendKit/Sources/AscendKit/Models/MuscleRegion.swift").read_text()
 
 problems = []
 

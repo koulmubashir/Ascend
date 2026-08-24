@@ -1,6 +1,6 @@
 import SwiftUI
 import UserNotifications
-import GymKit
+import AscendKit
 
 /// Every optional feature is off until switched on here, and each one asks for
 /// its own system permission at the moment it is enabled - never in a batch at
@@ -58,7 +58,7 @@ struct SettingsView: View {
                 Button("Open Settings") { openSystemSettings() }
                 Button("Not now", role: .cancel) { }
             } message: {
-                Text("Turn notifications on for GymTracker in the Settings app to get workout reminders.")
+                Text("Turn notifications on for Ascend in the Settings app to get workout reminders.")
             }
         }
     }

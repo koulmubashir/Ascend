@@ -1,5 +1,5 @@
 import Foundation
-import GymKit
+import AscendKit
 
 /// App state, persisted as JSON in the App Group container.
 ///

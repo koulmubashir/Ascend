@@ -1,5 +1,5 @@
 import SwiftUI
-import GymKit
+import AscendKit
 
 struct TodayView: View {
     @EnvironmentObject private var store: WorkoutStore

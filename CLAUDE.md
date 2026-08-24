@@ -12,25 +12,25 @@ backend. Four Xcode targets over one shared Swift package.
 Run from the repo root.
 
 ```bash
-# GymKit logic — fast, no simulator needed. Run this first for any GymKit change.
-swift test --package-path Packages/GymKit
+# AscendKit logic — fast, no simulator needed. Run this first for any AscendKit change.
+swift test --package-path Packages/AscendKit
 
 # A single test class or method
-swift test --package-path Packages/GymKit --filter RepCounterTests
-swift test --package-path Packages/GymKit --filter RepCounterTests/testCountsCleanReps
+swift test --package-path Packages/AscendKit --filter RepCounterTests
+swift test --package-path Packages/AscendKit --filter RepCounterTests/testCountsCleanReps
 
 # Build the app (also builds and embeds the Watch app and both extensions)
-xcodebuild -project GymTracker.xcodeproj -scheme GymTracker \
+xcodebuild -project Ascend.xcodeproj -scheme Ascend \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
 
 # Build the Watch app alone
-xcodebuild -project GymTracker.xcodeproj -scheme GymTrackerWatch \
+xcodebuild -project Ascend.xcodeproj -scheme AscendWatch \
   -destination 'platform=watchOS Simulator,name=Apple Watch Ultra 3 (49mm)' build
 
 # Install and run, with debug launch hooks (DEBUG builds only)
 xcrun simctl install <device-udid> \
-  ~/Library/Developer/Xcode/DerivedData/GymTracker-*/Build/Products/Debug-iphonesimulator/GymTracker.app
-xcrun simctl launch <device-udid> com.mubashirkoul.GymTracker -reset -autoplan -autostart
+  ~/Library/Developer/Xcode/DerivedData/Ascend-*/Build/Products/Debug-iphonesimulator/Ascend.app
+xcrun simctl launch <device-udid> com.mubashirkoul.Ascend -reset -autoplan -autostart
 ```
 
 `-reset` clears stored data, `-autoplan` creates a 4-day plan, `-autostart`
@@ -46,7 +46,7 @@ design/export-bodymaps.sh          # rewrites the ten PNGs from design/bodymap.h
 
 ## Architecture
 
-**`Packages/GymKit` holds everything testable without a device.** Models, the
+**`Packages/AscendKit` holds everything testable without a device.** Models, the
 session engine, scheduling, progression, notification planning, rep counting,
 and the Watch sync payloads. It is pure Swift with no UIKit, SwiftUI, HealthKit
 or ActivityKit, which is what lets 113 tests run in under a second from the
@@ -55,8 +55,8 @@ plumbing in the app targets.
 
 **One session engine, two renderers.** `SessionEngine/SessionStateMachine.swift`
 is the single source of truth for the exercise → rest → next-exercise flow. The
-phone (`GymTracker/Session/SessionView.swift`) and the Watch
-(`GymTrackerWatch/Session/WatchSessionView.swift`) both render its state and
+phone (`Ascend/Session/SessionView.swift`) and the Watch
+(`AscendWatch/Session/WatchSessionView.swift`) both render its state and
 send it events. Do not fork it per platform — that is what stops the two
 implementations drifting.
 
@@ -70,12 +70,12 @@ a message can arrive twice after reachability recovers.
 `applicationSupportDirectory`. Extensions have their own containers, so a widget
 writing to its own container can never be read by its host app. See
 `SharedSessionCommands` and `WidgetSnapshot` in
-`GymKit/LiveActivity/SharedContainer.swift`. Lock Screen buttons and Siri
+`AscendKit/LiveActivity/SharedContainer.swift`. Lock Screen buttons and Siri
 shortcuts drop a command in that mailbox; the app replays it through the normal
 state machine rather than mutating session state from another process.
 
-**Types shared with an extension must live in GymKit.** An app extension cannot
-export types back to its host app. `WorkoutActivityAttributes` is in GymKit
+**Types shared with an extension must live in AscendKit.** An app extension cannot
+export types back to its host app. `WorkoutActivityAttributes` is in AscendKit
 behind `#if canImport(ActivityKit) && os(iOS)` so the package still builds for
 watchOS.
 
@@ -83,10 +83,10 @@ watchOS.
 
 | Target | Deployment | Notes |
 |---|---|---|
-| `GymTracker` | iOS 16.0 | Phone app |
-| `GymTrackerWatch` | watchOS 9.0 | Embedded in the phone app |
-| `GymTrackerWidget` | iOS 16.1 | Live Activity + home screen widget |
-| `GymTrackerWatchWidget` | watchOS 9.0 | Complication, embedded in the Watch app |
+| `Ascend` | iOS 16.0 | Phone app |
+| `AscendWatch` | watchOS 9.0 | Embedded in the phone app |
+| `AscendWidget` | iOS 16.1 | Live Activity + home screen widget |
+| `AscendWatchWidget` | watchOS 9.0 | Complication, embedded in the Watch app |
 
 Every extension needs a **non-empty** entitlements file. An empty one does not
 force code signing, and the extension then builds unsigned while its parent is
@@ -96,7 +96,7 @@ certificate as the parent app".
 ## Decisions that look like bugs but are not
 
 - **Persistence is a Codable JSON snapshot, not Core Data.** Confined to
-  `load()`/`save()` in `GymTracker/App/AppStore.swift`.
+  `load()`/`save()` in `Ascend/App/AppStore.swift`.
 - **Vitals are labelled by how they are obtained.** Heart rate is live during a
   workout; blood oxygen is a periodic spot check, usually suppressed mid-workout;
   wrist temperature is overnight only. Never present them as equivalent.

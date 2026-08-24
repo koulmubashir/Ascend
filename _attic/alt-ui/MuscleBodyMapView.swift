@@ -1,5 +1,5 @@
 import SwiftUI
-import GymKit
+import AscendKit
 
 /// Renders the body-map artwork for a workout day.
 ///

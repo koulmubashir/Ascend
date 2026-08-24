@@ -1,0 +1,94 @@
+{
+  "note": "Body-map artwork. One flat PNG per workout day type. The app picks a file by `key`; if the file is missing it falls back to rest.png, then to a neutral placeholder.",
+  "spec": {
+    "views": "front AND back side by side in every image, front on the left",
+    "labels": "NONE - no anatomy text baked into the artwork. The app renders its own muscle-group labels.",
+    "chrome": "no status bar, no home indicator, no toolbar, no title text",
+    "format": "PNG",
+    "size": "1440x870 or larger (front+back side by side), consistent across all 10",
+    "framing": "identical figure position and scale in every image so they do not jump when swapped",
+    "background": "transparent preferred, otherwise near-white #f7f7f7",
+    "grayInactive": "#dcdcdc",
+    "orangeActive": "radial gradient, #ffa04a center to #f2571b edge"
+  },
+  "images": [
+    {
+      "key": "rest",
+      "file": "rest.png",
+      "highlight": "nothing - all gray",
+      "status": "generated"
+    },
+    {
+      "key": "push",
+      "file": "push.png",
+      "highlight": "chest, front delts, triceps",
+      "status": "generated"
+    },
+    {
+      "key": "pull",
+      "file": "pull.png",
+      "highlight": "lats, traps, rear delts, biceps, forearms",
+      "status": "generated"
+    },
+    {
+      "key": "legs",
+      "file": "legs.png",
+      "highlight": "quads, hamstrings, glutes, calves, adductors",
+      "status": "generated"
+    },
+    {
+      "key": "chest",
+      "file": "chest.png",
+      "highlight": "chest, front delts",
+      "status": "generated"
+    },
+    {
+      "key": "back",
+      "file": "back.png",
+      "highlight": "lats, traps, lower back",
+      "status": "generated"
+    },
+    {
+      "key": "shoulders",
+      "file": "shoulders.png",
+      "highlight": "front, side and rear delts, traps",
+      "status": "generated"
+    },
+    {
+      "key": "arms",
+      "file": "arms.png",
+      "highlight": "biceps, triceps, forearms",
+      "status": "generated"
+    },
+    {
+      "key": "core",
+      "file": "core.png",
+      "highlight": "abs, obliques",
+      "status": "generated"
+    },
+    {
+      "key": "fullBody",
+      "file": "full-body.png",
+      "highlight": "everything",
+      "status": "generated"
+    }
+  ],
+  "samples": [
+    {
+      "file": "_sample-upper-body.png",
+      "shows": "reference for framing - front+back, no chrome, no labels",
+      "useAsFramingReference": true
+    },
+    {
+      "file": "_sample-push.png",
+      "shows": "chest, delts, triceps / lats, rear delts, triceps"
+    },
+    {
+      "file": "_sample-upper-core.png",
+      "shows": "chest, abs, biceps, forearms / delts, triceps"
+    }
+  ],
+  "generatedFrom": "bodymap.html (inline SVG) via export-bodymaps.sh",
+  "regenerate": "./export-bodymaps.sh",
+  "size": "1440x870"
+}

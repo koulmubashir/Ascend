@@ -1,0 +1,22 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/*/build/
+
+# macOS
+.DS_Store
+
+# Scratch renders and intermediates
+design/*.b64
+design/check-*.png
+design/preview.png
+design/today-screen.html
+.claude/settings.local.json

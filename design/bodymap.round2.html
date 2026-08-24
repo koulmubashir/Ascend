@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anatomical Muscle Map</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 920px;
+            height: 800px;
+            background-color: #f7f7f7;
+            overflow: hidden;
+        }
+        #container {
+            width: 920px;
+            height: 800px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        svg {
+            display: block;
+            width: 920px;
+            height: 800px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <svg viewBox="260 40 920 800" width="920" height="800" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <radialGradient id="activeGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="0%" stop-color="#ffa04a" />
+                    <stop offset="100%" stop-color="#f2571b" />
+                </radialGradient>
+
+                <!-- Half figure building blocks (left side, centered at x=420) -->
+                <g id="front-half">
+                    <!-- Head -->
+                    <ellipse cx="420" cy="106" rx="34" ry="48" />
+                    <!-- Neck -->
+                    <path d="M404,144 C404,165 388,175 365,188 L420,188 L420,144 Z" />
+                    <!-- Torso -->
+                    <path d="M420,188 L365,188 C345,192 338,205 342,250 C342,320 362,380 362,400 C362,430 350,450 350,470 C350,488 385,500 420,500 Z" />
+                    <!-- Upper Arm -->
+                    <path d="M336,190 C320,192 310,230 302,290 C295,340 290,392 302,392 C314,392 328,340 336,290 C344,240 352,210 336,190 Z" />
+                    <!-- Forearm -->
+                    <path d="M302,385 C288,385 278,430 282,520 L296,520 C306,450 314,410 314,385 Z" />
+                    <!-- Hand -->
+                    <path d="M282,518 C278,535 280,555 284,562 C290,562 296,545 296,518 Z" />
+                    <!-- Thigh -->
+                    <path d="M350,470 C345,530 355,600 385,640 L415,640 C410,580 410,520 420,500 C380,500 355,480 350,470 Z" />
+                    <!-- Lower Leg -->
+                    <path d="M385,635 C370,680 375,740 392,786 L412,786 C422,740 420,680 415,635 Z" />
+                    <!-- Foot -->
+                    <path d="M392,782 L380,815 C380,820 415,820 415,815 L412,782 Z" />
+                </g>
+
+                <!-- Full Front Figure Silhouette -->
+                <g id="figure-front">
+                    <use href="#front-half" />
+                    <use href="#front-half" transform="translate(840,0) scale(-1,1)" />
+                </g>
+
+                <!-- Full Back Figure Silhouette (Centered at x=1020) -->
+                <g id="figure-back">
+                    <use href="#front-half" transform="translate(600,0)" />
+                    <use href="#front-half" transform="translate(1440,0) scale(-1,1)" />
+                </g>
+            </defs>
+
+            <!-- SILHOUETTES LAYER -->
+            <!-- Front Silhouette -->
+            <use href="#figure-front" fill="#a9a5a1" stroke="#a9a5a1" stroke-width="5" stroke-linejoin="round" />
+            <use href="#figure-front" fill="#fdfdfc" stroke="none" />
+
+            <!-- Back Silhouette -->
+            <use href="#figure-back" fill="#a9a5a1" stroke="#a9a5a1" stroke-width="5" stroke-linejoin="round" />
+            <use href="#figure-back" fill="#fdfdfc" stroke="none" />
+
+            <!-- MUSCLE REGIONS LAYER -->
+
+            <!-- 1. CHEST (Front) -->
+            <path data-region="chest" d="M352,235 C380,232 412,235 415,238 C416,260 415,288 412,295 C385,298 355,285 352,270 Z" fill="#dcdcdc" />
+            <path data-region="chest" d="M488,235 C460,232 428,235 425,238 C424,260 425,288 428,295 C455,298 485,285 488,270 Z" fill="#dcdcdc" />
+
+            <!-- 2. ABS (Front 3x2 grid) -->
+            <rect data-region="abs" x="382" y="320" width="32" height="30" rx="6" fill="#dcdcdc" />
+            <rect data-region="abs" x="426" y="320" width="32" height="30" rx="6" fill="#dcdcdc" />
+            <rect data-region="abs" x="382" y="355" width="32" height="30" rx="6" fill="#dcdcdc" />
+            <rect data-region="abs" x="426" y="355" width="32" height="30" rx="6" fill="#dcdcdc" />
+            <rect data-region="abs" x="384" y="390" width="30" height="28" rx="6" fill="#dcdcdc" />
+            <rect data-region="abs" x="426" y="390" width="30" height="28" rx="6" fill="#dcdcdc" />
+
+            <!-- 3. OBLIQUES (Front) -->
+            <path data-region="obliques" d="M358,320 C368,320 376,330 376,350 L376,410 C370,420 362,410 358,390 C354,360 354,335 358,320 Z" fill="#dcdcdc" />
+            <path data-region="obliques" d="M482,320 C472,320 464,330 464,350 L464,410 C470,420 478,410 482,390 C486,360 486,335 482,320 Z" fill="#dcdcdc" />
+
+            <!-- 4. FRONT DELT (Front) - cap wrapping the shoulder joint -->
+            <path data-region="frontDelt" d="M348,190 C336,192 330,204 328,222 C326,240 330,252 339,252 C348,252 353,240 354,222 C355,206 356,196 357,191 C354,189 351,189 348,190 Z" fill="#dcdcdc" />
+            <path data-region="frontDelt" d="M492,190 C504,192 510,204 512,222 C514,240 510,252 501,252 C492,252 487,240 486,222 C485,206 484,196 483,191 C486,189 489,189 492,190 Z" fill="#dcdcdc" />
+
+            <!-- 5. SIDE DELT (Front & Back) - outer cap over the top of the shoulder -->
+            <path data-region="sideDelt" d="M334,186 C322,188 315,200 313,218 C311,230 315,238 322,236 C329,234 333,224 335,212 C338,200 341,192 344,189 C341,186 337,185 334,186 Z" fill="#dcdcdc" />
+            <path data-region="sideDelt" d="M506,186 C518,188 525,200 527,218 C529,230 525,238 518,236 C511,234 507,224 505,212 C502,200 499,192 496,189 C499,186 503,185 506,186 Z" fill="#dcdcdc" />
+            <path data-region="sideDelt" d="M934,186 C922,188 915,200 913,218 C911,230 915,238 922,236 C929,234 933,224 935,212 C938,200 941,192 944,189 C941,186 937,185 934,186 Z" fill="#dcdcdc" />
+            <path data-region="sideDelt" d="M1106,186 C1118,188 1125,200 1127,218 C1129,230 1125,238 1118,236 C1111,234 1107,224 1105,212 C1102,200 1099,192 1096,189 C1099,186 1103,185 1106,186 Z" fill="#dcdcdc" />
+
+            <!-- 6. BICEPS (Front) -->
+            <path data-region="biceps" d="M328,245 C342,245 348,260 342,310 C336,340 322,340 318,310 C314,270 318,245 328,245 Z" fill="#dcdcdc" />
+            <path data-region="biceps" d="M512,245 C498,245 492,260 498,310 C504,340 518,340 522,310 C526,270 522,245 512,245 Z" fill="#dcdcdc" />
+
+            <!-- 7. FOREARM (Front & Back) -->
+            <path data-region="forearm" d="M292,398 C310,402 312,430 300,480 C294,505 288,515 284,505 C280,480 280,430 292,398 Z" fill="#dcdcdc" />
+            <path data-region="forearm" d="M548,398 C530,402 528,430 540,480 C546,505 552,515 556,505 C560,480 560,430 548,398 Z" fill="#dcdcdc" />
+            <path data-region="forearm" d="M892,398 C910,402 912,430 900,480 C894,505 888,515 884,505 C880,480 880,430 892,398 Z" fill="#dcdcdc" />
+            <path data-region="forearm" d="M1148,398 C1130,402 1128,430 1140,480 C1146,505 1152,515 1156,505 C1160,480 1160,430 1148,398 Z" fill="#dcdcdc" />
+
+            <!-- 8. QUADS (Front) -->
+            <path data-region="quads" d="M358,510 C380,505 400,510 402,540 C404,580 398,620 388,630 C375,630 358,580 355,540 Z" fill="#dcdcdc" />
+            <path data-region="quads" d="M482,510 C460,505 440,510 438,540 C436,580 442,620 452,630 C465,630 482,580 485,540 Z" fill="#dcdcdc" />
+
+            <!-- 9. ADDUCTORS (Front) -->
+            <path data-region="adductors" d="M405,515 C416,515 418,530 415,575 C412,590 406,590 404,575 C402,545 400,525 405,515 Z" fill="#dcdcdc" />
+            <path data-region="adductors" d="M435,515 C424,515 422,530 425,575 C428,590 434,590 436,575 C438,545 440,525 435,515 Z" fill="#dcdcdc" />
+
+            <!-- 10. CALVES (Front & Back) -->
+            <path data-region="calves" d="M380,655 C398,655 412,665 410,700 C408,735 398,760 390,760 C382,760 374,730 376,690 Z" fill="#dcdcdc" />
+            <path data-region="calves" d="M460,655 C442,655 428,665 430,700 C432,735 442,760 450,760 C458,760 466,730 464,690 Z" fill="#dcdcdc" />
+            <path data-region="calves" d="M980,655 C998,655 1012,665 1010,700 C1008,735 998,760 990,760 C982,760 974,730 976,690 Z" fill="#dcdcdc" />
+            <path data-region="calves" d="M1060,655 C1042,655 1028,665 1030,700 C1032,735 1042,760 1050,760 C1058,760 1066,730 1064,690 Z" fill="#dcdcdc" />
+
+            <!-- 11. TRAPS (Back) -->
+            <path data-region="traps" d="M1020,148 L1055,190 C1065,220 1045,265 1020,275 C995,265 975,220 985,190 Z" fill="#dcdcdc" />
+
+            <!-- 12. REAR DELT (Back) - cap wrapping the shoulder joint -->
+            <path data-region="rearDelt" d="M948,190 C936,192 930,204 928,222 C926,240 930,252 939,252 C948,252 953,240 954,222 C955,206 956,196 957,191 C954,189 951,189 948,190 Z" fill="#dcdcdc" />
+            <path data-region="rearDelt" d="M1092,190 C1104,192 1110,204 1112,222 C1114,240 1110,252 1101,252 C1092,252 1087,240 1086,222 C1085,206 1084,196 1083,191 C1086,189 1089,189 1092,190 Z" fill="#dcdcdc" />
+
+            <!-- 13. TRICEPS (Back) -->
+            <path data-region="triceps" d="M928,245 C942,245 948,260 942,310 C936,340 922,340 918,310 C914,270 918,245 928,245 Z" fill="#dcdcdc" />
+            <path data-region="triceps" d="M1112,245 C1098,245 1092,260 1098,310 C1104,340 1118,340 1122,310 C1126,270 1122,245 1112,245 Z" fill="#dcdcdc" />
+
+            <!-- 14. LATS (Back signature wings) -->
+            <path data-region="lats" d="M948,235 C972,250 990,280 992,320 C994,360 1010,380 1012,380 C1005,380 980,375 965,345 C952,310 945,265 948,235 Z" fill="#dcdcdc" />
+            <path data-region="lats" d="M1092,235 C1068,250 1050,280 1048,320 C1046,360 1030,380 1028,380 C1035,380 1060,375 1075,345 C1088,310 1095,265 1092,235 Z" fill="#dcdcdc" />
+
+            <!-- 15. LOWER BACK (Back) -->
+            <rect data-region="lowerBack" x="990" y="388" width="22" height="64" rx="8" fill="#dcdcdc" />
+            <rect data-region="lowerBack" x="1028" y="388" width="22" height="64" rx="8" fill="#dcdcdc" />
+
+            <!-- 16. GLUTES (Back) -->
+            <path data-region="glutes" d="M955,470 C955,455 1012,455 1015,470 C1018,500 1012,535 985,535 C960,535 955,505 955,470 Z" fill="#dcdcdc" />
+            <path data-region="glutes" d="M1085,470 C1085,455 1028,455 1025,470 C1022,500 1028,535 1055,535 C1080,535 1085,505 1085,470 Z" fill="#dcdcdc" />
+
+            <!-- 17. HAMSTRINGS (Back) -->
+            <path data-region="hamstrings" d="M958,542 C980,540 1000,542 1002,570 C1004,600 998,630 988,635 C975,635 958,600 955,570 Z" fill="#dcdcdc" />
+            <path data-region="hamstrings" d="M1082,542 C1060,540 1040,542 1038,570 C1036,600 1042,630 1052,635 C1065,635 1082,600 1085,570 Z" fill="#dcdcdc" />
+        </svg>
+    </div>
+
+    <script>
+        const presets = {
+            'rest': [],
+            'push': ['chest', 'frontDelt', 'triceps'],
+            'pull': ['lats', 'traps', 'rearDelt', 'biceps', 'forearm'],
+            'legs': ['quads', 'hamstrings', 'glutes', 'calves', 'adductors'],
+            'chest': ['chest', 'frontDelt'],
+            'back': ['lats', 'traps', 'lowerBack'],
+            'shoulders': ['frontDelt', 'sideDelt', 'rearDelt', 'traps'],
+            'arms': ['biceps', 'triceps', 'forearm'],
+            'core': ['abs', 'obliques'],
+            'fullBody': ['chest', 'frontDelt', 'sideDelt', 'rearDelt', 'traps', 'lats', 'lowerBack', 'biceps', 'triceps', 'forearm', 'abs', 'obliques', 'quads', 'hamstrings', 'glutes', 'calves', 'adductors']
+        };
+
+        window.setRegions = function(activeRegions) {
+            document.querySelectorAll('[data-region]').forEach(el => {
+                const regionName = el.getAttribute('data-region');
+                el.setAttribute('fill', activeRegions.includes(regionName) ? 'url(#activeGradient)' : '#dcdcdc');
+            });
+        };
+
+        window.setPreset = function(presetName) {
+            const regions = presets[presetName] || [];
+            window.setRegions(regions);
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialPreset = urlParams.get('preset') || 'rest';
+            window.setPreset(initialPreset);
+        });
+    </script>
+</body>
+</html>

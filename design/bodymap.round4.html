@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anatomical Muscle Map</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 920px;
+            height: 800px;
+            background-color: #f7f7f7;
+            overflow: hidden;
+        }
+        #container {
+            width: 920px;
+            height: 800px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <svg viewBox="260 40 920 800" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <radialGradient id="activeGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="0%" stop-color="#ffa04a" />
+                    <stop offset="100%" stop-color="#f2571b" />
+                </radialGradient>
+
+                <g id="front-half">
+                    <ellipse cx="420" cy="106" rx="34" ry="48" />
+                    <path d="M404,144 C404,165 388,175 365,188 L420,188 L420,144 Z" />
+                    <path d="M420,188 L365,188 C345,192 338,205 342,250 C342,320 362,380 362,400 C362,430 350,450 350,470 C350,488 385,500 420,500 Z" />
+                    <path d="M336,190 C320,192 310,230 302,290 C295,340 290,392 302,392 C314,392 328,340 336,290 C344,240 352,210 336,190 Z" />
+                    <path d="M302,385 C288,385 278,430 282,520 L296,520 C306,450 314,410 314,385 Z" />
+                    <path d="M282,518 C278,535 280,555 284,562 C290,562 296,545 296,518 Z" />
+                    <path d="M350,470 C345,530 355,600 385,640 L415,640 C410,580 410,520 420,500 C380,500 355,480 350,470 Z" />
+                    <path d="M385,635 C370,680 375,740 392,786 L412,786 C422,740 420,680 415,635 Z" />
+                    <path d="M392,782 L380,815 C380,820 415,820 415,815 L412,782 Z" />
+                </g>
+
+                <g id="figure-front">
+                    <use href="#front-half" />
+                    <use href="#front-half" transform="translate(840,0) scale(-1,1)" />
+                </g>
+
+                <g id="figure-back">
+                    <use href="#front-half" transform="translate(600,0)" />
+                    <use href="#front-half" transform="translate(1440,0) scale(-1,1)" />
+                </g>
+            </defs>
+
+            <!-- SILHOUETTES LAYER -->
+            <!-- Front Silhouette -->
+            <use href="#figure-front" fill="#a9a5a1" stroke="#a9a5a1" stroke-width="5" stroke-linejoin="round" />
+            <use href="#figure-front" fill="#fdfdfc" stroke="none" />
+
+            <!-- Back Silhouette -->
+            <use href="#figure-back" fill="#a9a5a1" stroke="#a9a5a1" stroke-width="5" stroke-linejoin="round" />
+            <use href="#figure-back" fill="#fdfdfc" stroke="none" />
+
+            <!-- MUSCLE REGIONS LAYER -->
+
+            <!-- UNNAMED GRAYS -->
+            <g fill="#dcdcdc">
+                <!-- Front Neck -->
+                <path d="M406,146 L418,146 L418,186 L368,186 Z" />
+                <path d="M406,146 L418,146 L418,186 L368,186 Z" transform="translate(840,0) scale(-1,1)" />
+                <!-- Front Knees -->
+                <ellipse cx="400" cy="635" rx="8" ry="12" />
+                <ellipse cx="400" cy="635" rx="8" ry="12" transform="translate(840,0) scale(-1,1)" />
+                <!-- Front Shins -->
+                <path d="M410,645 L416,645 L416,775 L405,775 Z" />
+                <path d="M410,645 L416,645 L416,775 L405,775 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <!-- Back Neck -->
+                <path d="M1006,146 L1018,146 L1018,186 L968,186 Z" />
+                <path d="M1006,146 L1018,146 L1018,186 L968,186 Z" transform="translate(2040,0) scale(-1,1)" />
+                <!-- Back Knees -->
+                <ellipse cx="1000" cy="635" rx="10" ry="8" />
+                <ellipse cx="1000" cy="635" rx="10" ry="8" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+
+            <!-- CHEST (Front) -->
+            <g data-region="chest" fill="#dcdcdc">
+                <path d="M355,235 C380,232 410,232 418,235 L418,245 C400,248 365,248 350,242 Z" />
+                <path d="M355,235 C380,232 410,232 418,235 L418,245 C400,248 365,248 350,242 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <path d="M348,246 C365,252 400,250 418,248 L418,295 C390,295 360,280 348,255 Z" />
+                <path d="M348,246 C365,252 400,250 418,248 L418,295 C390,295 360,280 348,255 Z" transform="translate(840,0) scale(-1,1)" />
+            </g>
+
+            <!-- ABS (Front) -->
+            <g data-region="abs" fill="#dcdcdc">
+                <rect x="395" y="318" width="23" height="20" rx="3" />
+                <rect x="395" y="318" width="23" height="20" rx="3" transform="translate(840,0) scale(-1,1)" />
+
+                <rect x="392" y="342" width="26" height="22" rx="3" />
+                <rect x="392" y="342" width="26" height="22" rx="3" transform="translate(840,0) scale(-1,1)" />
+
+                <rect x="388" y="368" width="30" height="22" rx="3" />
+                <rect x="388" y="368" width="30" height="22" rx="3" transform="translate(840,0) scale(-1,1)" />
+
+                <rect x="385" y="394" width="33" height="24" rx="4" />
+                <rect x="385" y="394" width="33" height="24" rx="4" transform="translate(840,0) scale(-1,1)" />
+            </g>
+
+            <!-- OBLIQUES (Front) -->
+            <g data-region="obliques" fill="#dcdcdc">
+                <path d="M356,315 L368,315 L365,335 L356,335 Z" />
+                <path d="M356,315 L368,315 L365,335 L356,335 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <path d="M360,340 C375,340 375,390 375,445 C365,445 355,420 360,340 Z" />
+                <path d="M360,340 C375,340 375,390 375,445 C365,445 355,420 360,340 Z" transform="translate(840,0) scale(-1,1)" />
+            </g>
+
+            <!-- QUADS (Front) -->
+            <g data-region="quads" fill="#dcdcdc">
+                <path d="M353,505 C353,550 365,600 375,620 L385,620 C370,550 365,505 365,505 Z" />
+                <path d="M353,505 C353,550 365,600 375,620 L385,620 C370,550 365,505 365,505 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <path d="M368,505 C375,550 388,610 395,620 L402,620 C395,550 385,505 385,505 Z" />
+                <path d="M368,505 C375,550 388,610 395,620 L402,620 C395,550 385,505 385,505 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <path d="M388,580 C395,595 408,610 412,620 L418,620 L418,580 Z" />
+                <path d="M388,580 C395,595 408,610 412,620 L418,620 L418,580 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <path d="M405,505 L415,570 L418,570 L418,505 Z" />
+                <path d="M405,505 L415,570 L418,570 L418,505 Z" transform="translate(840,0) scale(-1,1)" />
+            </g>
+
+            <!-- ADDUCTORS (Front) -->
+            <g data-region="adductors" fill="#dcdcdc">
+                <path d="M414,505 L414,570 L416,570 L416,505 Z" />
+                <path d="M414,505 L414,570 L416,570 L416,505 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <path d="M417,505 L417,575 L419,575 L419,505 Z" />
+                <path d="M417,505 L417,575 L419,575 L419,505 Z" transform="translate(840,0) scale(-1,1)" />
+            </g>
+
+            <!-- CALVES (Front & Back) -->
+            <g data-region="calves" fill="#dcdcdc">
+                <!-- Front Outer -->
+                <path d="M376,645 C370,680 380,720 388,720 C390,700 390,660 386,645 Z" />
+                <path d="M376,645 C370,680 380,720 388,720 C390,700 390,660 386,645 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <!-- Front Inner -->
+                <path d="M390,660 C395,700 405,740 412,740 C412,710 405,670 400,660 Z" />
+                <path d="M390,660 C395,700 405,740 412,740 C412,710 405,670 400,660 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <!-- Back Outer -->
+                <path d="M976,645 C970,680 980,720 988,720 C990,700 990,660 986,645 Z" />
+                <path d="M976,645 C970,680 980,720 988,720 C990,700 990,660 986,645 Z" transform="translate(2040,0) scale(-1,1)" />
+
+                <!-- Back Inner -->
+                <path d="M990,660 C995,700 1005,740 1012,740 C1012,710 1005,670 1000,660 Z" />
+                <path d="M990,660 C995,700 1005,740 1012,740 C1012,710 1005,670 1000,660 Z" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+
+            <!-- BICEPS (Front) -->
+            <g data-region="biceps" fill="#dcdcdc">
+                <path d="M305,290 C305,310 308,320 312,320 C312,310 310,290 305,290 Z" />
+                <path d="M305,290 C305,310 308,320 312,320 C312,310 310,290 305,290 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <path d="M312,270 C310,300 315,330 325,335 C330,300 325,270 312,270 Z" />
+                <path d="M312,270 C310,300 315,330 325,335 C330,300 325,270 312,270 Z" transform="translate(840,0) scale(-1,1)" />
+            </g>
+
+            <!-- FOREARM (Front & Back) -->
+            <g data-region="forearm" fill="#dcdcdc">
+                <!-- Front Upper -->
+                <path d="M302,392 C290,410 286,440 292,450 C302,450 312,420 312,392 Z" />
+                <path d="M302,392 C290,410 286,440 292,450 C302,450 312,420 312,392 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <!-- Front Lower -->
+                <path d="M292,455 C286,480 286,500 290,510 C295,510 300,480 298,455 Z" />
+                <path d="M292,455 C286,480 286,500 290,510 C295,510 300,480 298,455 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <!-- Back Upper -->
+                <path d="M902,392 C890,410 886,440 892,450 C902,450 912,420 912,392 Z" />
+                <path d="M902,392 C890,410 886,440 892,450 C902,450 912,420 912,392 Z" transform="translate(2040,0) scale(-1,1)" />
+
+                <!-- Back Lower -->
+                <path d="M892,455 C886,480 886,500 890,510 C895,510 900,480 898,455 Z" />
+                <path d="M892,455 C886,480 886,500 890,510 C895,510 900,480 898,455 Z" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+
+            <!-- FRONT DELT (Front) -->
+            <g data-region="frontDelt" fill="#dcdcdc">
+                <path d="M345,195 C335,210 330,240 338,255 C348,240 352,210 345,195 Z" />
+                <path d="M345,195 C335,210 330,240 338,255 C348,240 352,210 345,195 Z" transform="translate(840,0) scale(-1,1)" />
+            </g>
+
+            <!-- SIDE DELT (Front & Back) -->
+            <g data-region="sideDelt" fill="#dcdcdc">
+                <!-- Front -->
+                <path d="M336,192 C320,205 315,230 325,250 C330,230 335,210 336,192 Z" />
+                <path d="M336,192 C320,205 315,230 325,250 C330,230 335,210 336,192 Z" transform="translate(840,0) scale(-1,1)" />
+
+                <!-- Back -->
+                <path d="M945,195 C935,210 930,240 938,255 C948,240 952,210 945,195 Z" />
+                <path d="M945,195 C935,210 930,240 938,255 C948,240 952,210 945,195 Z" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+
+            <!-- REAR DELT (Back) -->
+            <g data-region="rearDelt" fill="#dcdcdc">
+                <path d="M936,192 C920,205 915,230 925,250 C935,230 945,210 936,192 Z" />
+                <path d="M936,192 C920,205 915,230 925,250 C935,230 945,210 936,192 Z" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+
+            <!-- TRAPS (Back) -->
+            <g data-region="traps" fill="#dcdcdc">
+                <path d="M985,195 L1018,195 L1018,240 L985,195 Z" />
+                <path d="M985,195 L1018,195 L1018,240 L985,195 Z" transform="translate(2040,0) scale(-1,1)" />
+
+                <path d="M990,245 L1018,245 L1018,285 L990,245 Z" />
+                <path d="M990,245 L1018,245 L1018,285 L990,245 Z" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+
+            <!-- LATS (Back) -->
+            <g data-region="lats" fill="#dcdcdc">
+                <path d="M955,250 C970,280 1000,380 1018,395 C1018,350 990,300 975,250 Z" />
+                <path d="M955,250 C970,280 1000,380 1018,395 C1018,350 990,300 975,250 Z" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+
+            <!-- LOWER BACK (Back) -->
+            <g data-region="lowerBack" fill="#dcdcdc">
+                <path d="M1000,405 L1008,405 L1008,455 L1000,455 Z" />
+                <path d="M1000,405 L1008,405 L1008,455 L1000,455 Z" transform="translate(2040,0) scale(-1,1)" />
+
+                <path d="M1012,405 L1018,405 L1018,455 L1012,455 Z" />
+                <path d="M1012,405 L1018,405 L1018,455 L1012,455 Z" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+
+            <!-- GLUTES (Back) -->
+            <g data-region="glutes" fill="#dcdcdc">
+                <path d="M960,470 C955,500 970,530 1018,535 L1018,470 Z" />
+                <path d="M960,470 C955,500 970,530 1018,535 L1018,470 Z" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+
+            <!-- HAMSTRINGS (Back) -->
+            <g data-region="hamstrings" fill="#dcdcdc">
+                <path d="M955,515 C955,560 965,600 975,625 L982,625 C970,600 965,560 965,515 Z" />
+                <path d="M955,515 C955,560 965,600 975,625 L982,625 C970,600 965,560 965,515 Z" transform="translate(2040,0) scale(-1,1)" />
+
+                <path d="M972,515 C975,560 985,600 995,625 L1002,625 C990,600 982,560 982,515 Z" />
+                <path d="M972,515 C975,560 985,600 995,625 L1002,625 C990,600 982,560 982,515 Z" transform="translate(2040,0) scale(-1,1)" />
+
+                <path d="M990,515 C995,560 1005,600 1015,625 L1018,625 L1018,515 Z" />
+                <path d="M990,515 C995,560 1005,600 1015,625 L1018,625 L1018,515 Z" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+
+            <!-- TRICEPS (Back) -->
+            <g data-region="triceps" fill="#dcdcdc">
+                <path d="M925,250 C915,280 920,320 930,335 C935,320 935,280 925,250 Z" />
+                <path d="M925,250 C915,280 920,320 930,335 C935,320 935,280 925,250 Z" transform="translate(2040,0) scale(-1,1)" />
+
+                <path d="M910,250 C905,280 905,300 915,320 C920,300 920,280 910,250 Z" />
+                <path d="M910,250 C905,280 905,300 915,320 C920,300 920,280 910,250 Z" transform="translate(2040,0) scale(-1,1)" />
+
+                <path d="M935,290 C930,310 935,330 940,335 C945,330 945,310 935,290 Z" />
+                <path d="M935,290 C930,310 935,330 940,335 C945,330 945,310 935,290 Z" transform="translate(2040,0) scale(-1,1)" />
+            </g>
+        </svg>
+    </div>
+
+    <script>
+        const presets = {
+            'rest': [],
+            'push': ['chest', 'frontDelt', 'triceps'],
+            'pull': ['lats', 'traps', 'rearDelt', 'biceps', 'forearm'],
+            'legs': ['quads', 'hamstrings', 'glutes', 'calves', 'adductors'],
+            'chest': ['chest', 'frontDelt'],
+            'back': ['lats', 'traps', 'lowerBack'],
+            'shoulders': ['frontDelt', 'sideDelt', 'rearDelt', 'traps'],
+            'arms': ['biceps', 'triceps', 'forearm'],
+            'core': ['abs', 'obliques'],
+            'fullBody': ['chest', 'frontDelt', 'sideDelt', 'rearDelt', 'traps', 'lats', 'lowerBack', 'biceps', 'triceps', 'forearm', 'abs', 'obliques', 'quads', 'hamstrings', 'glutes', 'calves', 'adductors']
+        };
+
+        window.setRegions = function(activeRegions) {
+            document.querySelectorAll('[data-region]').forEach(el => {
+                const regionName = el.getAttribute('data-region');
+                el.setAttribute('fill', activeRegions.includes(regionName) ? 'url(#activeGradient)' : '#dcdcdc');
+            });
+        };
+
+        window.setPreset = function(presetName) {
+            const regions = presets[presetName] || [];
+            window.setRegions(regions);
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialPreset = urlParams.get('preset') || 'rest';
+            window.setPreset(initialPreset);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anatomical Muscle Map</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+        #container {
+            width: 1440px;
+            height: 870px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+        }
+        svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <svg viewBox="0 0 1440 870" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <radialGradient id="activeGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="0%" stop-color="#ffa04a" />
+                    <stop offset="100%" stop-color="#f2571b" />
+                </radialGradient>
+            </defs>
+            
+            <!-- Front Figure Silhouette -->
+            <path d="M298.3,64.2c-20.6-20.1-41.2-22.1-51.2-12.2s-10.4,26.5,1.5,38.1s29.7,21.8,40.4,17.2S296.8,77.9,298.3,64.2z M273.6,116.3 c-43.2-14.7-72.7-32.9-72.7-54.8s29.5-40.1,72.7-54.8 M200.9,61.5c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8 M116.4,116.3 c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8 M43.7,116.3c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8 M116.4,116.3 c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8 M200.9,171.1c-43.2-14.7-72.7-32.9-72.7-54.8s29.5-40.1,72.7-54.8 M273.6,116.3 c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8 M116.4,116.3c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8 M43.7,116.3 c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8 M116.4,116.3c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8 M116.4,116.3 c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8 M116.4,116.3c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8 M116.4,116.3 c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8"
+                fill="#fdfdfc" stroke="#a9a5a1" stroke-width="1.5" />
+            
+            <!-- Front Figure Muscles -->
+            <ellipse data-region="frontDelt" cx="197" cy="180" rx="45" ry="35" fill="#dcdcdc" />
+            <ellipse data-region="frontDelt" cx="363" cy="180" rx="45" ry="35" fill="#dcdcdc" />
+            <path data-region="chest" d="M225,230c25-30,65-30,90,0v15c-25,30-65,30-90,0V230z" fill="#dcdcdc" />
+            <path data-region="chest" d="M335,230c25-30,65-30,90,0v15c-25,30-65,30-90,0V230z" fill="#dcdcdc" />
+            <ellipse data-region="biceps" cx="170" cy="270" rx="25" ry="45" fill="#dcdcdc" />
+            <ellipse data-region="biceps" cx="390" cy="270" rx="25" ry="45" fill="#dcdcdc" />
+            <ellipse data-region="sideDelt" cx="190" cy="185" rx="20" ry="30" fill="#dcdcdc" />
+            <ellipse data-region="sideDelt" cx="370" cy="185" rx="20" ry="30" fill="#dcdcdc" />
+            <ellipse data-region="forearm" cx="160" cy="390" rx="22" ry="55" fill="#dcdcdc" />
+            <ellipse data-region="forearm" cx="400" cy="390" rx="22" ry="55" fill="#dcdcdc" />
+            
+            <g data-region="abs">
+                <rect x="250" y="300" width="35" height="35" rx="10" fill="#dcdcdc" />
+                <rect x="290" y="300" width="35" height="35" rx="10" fill="#dcdcdc" />
+                <rect x="250" y="340" width="35" height="35" rx="10" fill="#dcdcdc" />
+                <rect x="290" y="340" width="35" height="35" rx="10" fill="#dcdcdc" />
+                <rect x="250" y="380" width="35" height="35" rx="10" fill="#dcdcdc" />
+                <rect x="290" y="380" width="35" height="35" rx="10" fill="#dcdcdc" />
+            </g>
+            
+            <path data-region="obliques" d="M220,310c0,0-15,40-5,80h25c-5-40,5-80,5-80H220z" fill="#dcdcdc" />
+            <path data-region="obliques" d="M350,310c0,0,15,40,5,80h-25c5-40-5-80-5-80H350z" fill="#dcdcdc" />
+            
+            <path data-region="quads" d="M225,520c15-60,45-60,60,0v130c-15,60-45,60-60,0V520z" fill="#dcdcdc" />
+            <path data-region="quads" d="M305,520c15-60,45-60,60,0v130c-15,60-45,60-60,0V520z" fill="#dcdcdc" />
+            
+            <path data-region="adductors" d="M260,530c5-30,15-30,20,0v60c-5,30-15,30-20,0V530z" fill="#dcdcdc" />
+            <path data-region="adductors" d="M310,530c5-30,15-30,20,0v60c-5,30-15,30-20,0V530z" fill="#dcdcdc" />
+            
+            <ellipse data-region="calves" cx="240" cy="730" rx="20" ry="35" fill="#dcdcdc" />
+            <ellipse data-region="calves" cx="330" cy="730" rx="20" ry="35" fill="#dcdcdc" />
+            
+            <!-- Back Figure Silhouette -->
+            <path d="M1098.3,64.2c20.6-20.1,41.2-22.1,51.2-12.2s10.4,26.5-1.5,38.1s-29.7,21.8-40.4,17.2S1099.8,77.9,1098.3,64.2z M1123,116.3 c43.2-14.7,72.7-32.9,72.7-54.8s-29.5-40.1-72.7-54.8 M1195.7,61.5c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8 M1280.2,116.3 c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8 M1352.9,116.3c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8 M1280.2,116.3 c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8 M1195.7,171.1c43.2-14.7,72.7-32.9,72.7-54.8s-29.5-40.1-72.7-54.8 M1123,116.3 c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8 M1280.2,116.3c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8 M1352.9,116.3 c-43.2,14.7-72.7,32.9-72.7,54.8s29.5,40.1,72.7,54.8 M1280.2,116.3c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8 M1280.2,116.3 c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8 M1280.2,116.3c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8 M1280.2,116.3 c43.2,14.7,72.7,32.9,72.7,54.8s-29.5,40.1-72.7,54.8"
+                fill="#fdfdfc" stroke="#a9a5a1" stroke-width="1.5" />
+            
+            <!-- Back Figure Muscles -->
+            <ellipse data-region="rearDelt" cx="1097" cy="180" rx="45" ry="35" fill="#dcdcdc" />
+            <ellipse data-region="rearDelt" cx="1263" cy="180" rx="45" ry="35" fill="#dcdcdc" />
+            <path data-region="traps" d="M1160,110c10-20,30-20,40,0c0,10-10,20-20,20S1160,120,1160,110z" fill="#dcdcdc" />
+            <ellipse data-region="triceps" cx="1070" cy="270" rx="25" ry="45" fill="#dcdcdc" />
+            <ellipse data-region="triceps" cx="1290" cy="270" rx="25" ry="45" fill="#dcdcdc" />
+            <ellipse data-region="sideDelt" cx="1090" cy="185" rx="20" ry="30" fill="#dcdcdc" />
+            <ellipse data-region="sideDelt" cx="1270" cy="185" rx="20" ry="30" fill="#dcdcdc" />
+            <ellipse data-region="forearm" cx="1060" cy="390" rx="22" ry="55" fill="#dcdcdc" />
+            <ellipse data-region="forearm" cx="1300" cy="390" rx="22" ry="55" fill="#dcdcdc" />
+            
+            <path data-region="lats" d="M1100,240c0,0-15,60-15,100c0,30,15,40,30,30c10-5,15-20,15-20H1100z" fill="#dcdcdc" />
+            <path data-region="lats" d="M1260,240c0,0,15,60,15,100c0,30-15,40-30,30c-10-5-15-20-15-20H1260z" fill="#dcdcdc" />
+            
+            <ellipse data-region="lowerBack" cx="1180" cy="400" rx="40" ry="15" fill="#dcdcdc" />
+            
+            <ellipse data-region="glutes" cx="1155" cy="480" rx="45" ry="55" fill="#dcdcdc" />
+            <ellipse data-region="glutes" cx="1205" cy="480" rx="45" ry="55" fill="#dcdcdc" />
+            
+            <path data-region="hamstrings" d="M1125,560c15-60,45-60,60,0v130c-15,60-45,60-60,0V560z" fill="#dcdcdc" />
+            <path data-region="hamstrings" d="M1205,560c15-60,45-60,60,0v130c-15,60-45,60-60,0V560z" fill="#dcdcdc" />
+            
+            <ellipse data-region="calves" cx="1140" cy="730" rx="25" ry="40" fill="#dcdcdc" />
+            <ellipse data-region="calves" cx="1230" cy="730" rx="25" ry="40" fill="#dcdcdc" />
+            
+        </svg>
+    </div>
+    
+    <script>
+        const presets = {
+            'rest': [],
+            'push': ['chest', 'frontDelt', 'triceps'],
+            'pull': ['lats', 'traps', 'rearDelt', 'biceps', 'forearm'],
+            'legs': ['quads', 'hamstrings', 'glutes', 'calves', 'adductors'],
+            'chest': ['chest', 'frontDelt'],
+            'back': ['lats', 'traps', 'lowerBack'],
+            'shoulders': ['frontDelt', 'sideDelt', 'rearDelt', 'traps'],
+            'arms': ['biceps', 'triceps', 'forearm'],
+            'core': ['abs', 'obliques'],
+            'fullBody': ['chest', 'frontDelt', 'sideDelt', 'rearDelt', 'traps', 'lats', 'lowerBack', 'biceps', 'triceps', 'forearm', 'abs', 'obliques', 'quads', 'hamstrings', 'glutes', 'calves', 'adductors']
+        };
+
+        window.setRegions = function(activeRegions) {
+            document.querySelectorAll('[data-region]').forEach(el => {
+                const regionName = el.getAttribute('data-region');
+                el.setAttribute('fill', activeRegions.includes(regionName) ? 'url(#activeGradient)' : '#dcdcdc');
+            });
+        };
+
+        window.setPreset = function(presetName) {
+            const regions = presets[presetName] || [];
+            window.setRegions(regions);
+        };
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialPreset = urlParams.get('preset') || 'rest';
+            window.setPreset(initialPreset);
+        };
+    </script>
+</body>
+</html>

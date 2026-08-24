@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; }
+  html, body { width: 1024px; height: 1024px; overflow: hidden; }
+</style>
+</head>
+<body>
+<!--
+  Rendered at 1024x1024 for the asset catalog.
+
+  No rounded corners and no padding: iOS and watchOS apply their own mask, so
+  the artwork must run edge to edge. The chevrons sit inside roughly the middle
+  70% so nothing important is clipped by the circular watchOS mask.
+-->
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0"   stop-color="#fff7f0"/>
+      <stop offset="0.55" stop-color="#ffe8d5"/>
+      <stop offset="1"   stop-color="#ffd6b5"/>
+    </linearGradient>
+    <linearGradient id="lead" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0430a"/>
+      <stop offset="1" stop-color="#ff8a3d"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#ground)"/>
+
+  <g fill="none" stroke-width="88" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Trailing chevron, lighter so the eye reads upward motion. Solid rather
+         than a low opacity, which turned muddy on the dark variant. -->
+    <polyline points="288,760 512,536 736,760" stroke="#ffc49a"/>
+    <polyline points="288,584 512,360 736,584" stroke="url(#lead)"/>
+  </g>
+</svg>
+</body>
+</html>

@@ -19,17 +19,16 @@ public struct WatchFaceSnapshot: Codable, Hashable, Sendable {
         workoutName: "Push", dayLabel: "Today", exerciseCount: 4
     )
 
+    /// The App Group container, not the process's own. A widget extension has
+    /// a separate container from its host app, so writing to
+    /// applicationSupportDirectory would put the file somewhere the
+    /// complication could never read it.
     private static var url: URL? {
-        FileManager.default
-            .urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
-            .appendingPathComponent("watch-face.json")
+        SharedSessionCommands.containerURL(named: "watch-face.json")
     }
 
     public static func write(_ snapshot: WatchFaceSnapshot) {
         guard let url else { return }
-        try? FileManager.default.createDirectory(
-            at: url.deletingLastPathComponent(), withIntermediateDirectories: true
-        )
         try? JSONEncoder().encode(snapshot).write(to: url, options: .atomic)
     }
 

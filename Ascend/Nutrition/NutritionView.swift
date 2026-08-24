@@ -31,7 +31,7 @@ struct NutritionView: View {
     }
 
     private func card(for kind: IntakeKind) -> some View {
-        let total = store.todayTotal(for: kind)
+        let total = store.displayTotal(for: kind)
         let goal = store.goal(for: kind)
         let progress = IntakeTracker.progress(total: total, goal: goal)
 

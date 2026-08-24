@@ -378,7 +378,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Ascend;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your heart rate, blood oxygen and wrist temperature alongside your workouts.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your heart rate, blood oxygen and wrist temperature alongside your workouts, and brings in workouts, weight and nutrition recorded elsewhere.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Saves your workouts to Apple Health so they count toward your Activity rings.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -411,7 +411,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Ascend;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your heart rate, blood oxygen and wrist temperature alongside your workouts.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your heart rate, blood oxygen and wrist temperature alongside your workouts, and brings in workouts, weight and nutrition recorded elsewhere.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Saves your workouts to Apple Health so they count toward your Activity rings.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

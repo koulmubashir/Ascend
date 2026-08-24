@@ -25,6 +25,14 @@ final class AppStore: ObservableObject {
     /// future library update cannot clobber them.
     @Published var customExercises: [Exercise] = []
     @Published internal(set) var measurements: [BodyMeasurement] = []
+    /// Workouts recorded by other apps, kept apart from our own sessions so
+    /// they can never be confused with them.
+    @Published internal(set) var importedWorkouts: [ImportedWorkout] = []
+    /// Today's protein and water totals as Health sees them, including other
+    /// apps. Not persisted - it is a view of Health, re-read each time.
+    @Published internal(set) var externalIntake: [IntakeKind: Double] = [:]
+    /// Guards against registering the Health observer more than once.
+    internal var isObservingHealth = false
     /// Whether plan edits apply to one day or the whole recurring series.
     /// Series is the default because "edit my Push day" almost always means
     /// every Push day.
@@ -72,6 +80,17 @@ final class AppStore: ObservableObject {
         if arguments.contains("-reset") { reset() }
         if arguments.contains("-autoplan"), plan == nil { createPlan(daysPerWeek: 4) }
         if arguments.contains("-autostart"), let next = nextWorkout { startSession(for: next) }
+        // Simulator has no Health data, so there is otherwise no way to see how
+        // an outside workout renders in history.
+        if arguments.contains("-fakehealth") {
+            importedWorkouts = [
+                ImportedWorkout(
+                    healthKitID: UUID(), activityName: "Run",
+                    startedAt: Date().addingTimeInterval(-86_400),
+                    duration: 2_400, sourceName: "com.strava.Strava"
+                )
+            ]
+        }
     }
     #endif
 
@@ -135,6 +154,7 @@ final class AppStore: ObservableObject {
         vitals = []
         customExercises = []
         measurements = []
+        importedWorkouts = []
         activeSession = nil
         machine = nil
         settings = FeatureSettings()
@@ -584,6 +604,7 @@ final class AppStore: ObservableObject {
         var vitals: [VitalsSample]?
         var customExercises: [Exercise]?
         var measurements: [BodyMeasurement]?
+        var importedWorkouts: [ImportedWorkout]?
     }
 
     private var fileURL: URL {
@@ -596,7 +617,7 @@ final class AppStore: ObservableObject {
         Snapshot(plan: plan, schedule: schedule, sessions: sessions,
                  records: records, settings: settings, intake: intake,
                  vitals: vitals, customExercises: customExercises,
-                 measurements: measurements)
+                 measurements: measurements, importedWorkouts: importedWorkouts)
     }
 
     func apply(_ snapshot: Snapshot) {
@@ -609,6 +630,7 @@ final class AppStore: ObservableObject {
         vitals = snapshot.vitals ?? []
         customExercises = snapshot.customExercises ?? []
         measurements = snapshot.measurements ?? []
+        importedWorkouts = snapshot.importedWorkouts ?? []
     }
 
     /// Persists only.

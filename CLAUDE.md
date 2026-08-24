@@ -130,6 +130,9 @@ certificate as the parent app".
   `CODE_SIGN_IDENTITY[sdk=watchsimulator*] = "-"`, and `CODE_SIGNING_REQUIRED`
   were each tried and none fixed it; root cause not established.
 - No superset support in the session engine.
+- Health background delivery is registered but effectively foreground-only
+  without the background-delivery entitlement; imports are driven by foreground
+  and pull-to-refresh instead.
 - The iCloud entitlement is deliberately absent — see `ICLOUD-SETUP.md`.
 - `_attic/` holds an unused parallel UI implementation, kept for reference.
 

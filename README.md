@@ -81,6 +81,26 @@ The session engine lives in AscendKit and is rendered by both the phone and the
 Watch, so there is one implementation of the exercise → rest → next-exercise
 flow rather than two that drift apart.
 
+## Apple Health
+
+Sync runs both ways. Workouts, vitals and (optionally) nutrition go out to
+Health; workouts logged in other apps, weigh-ins from a scale, and dietary
+entries from elsewhere come back in and appear in History, attributed to the app
+that recorded them.
+
+The hard part is not reading — it is not double counting, since this app writes
+its own workouts to Health and would otherwise import them straight back.
+`HealthSync` in AscendKit rejects an incoming workout three ways: it was written
+by our own bundle identifier, its HealthKit id has already been imported, or it
+starts within two minutes of one of our own sessions (which catches clock skew
+between devices). That logic is pure and unit tested; `HealthKitManager` only
+fetches.
+
+Import runs on every foreground and on pull-to-refresh in History. An
+`HKObserverQuery` is also registered, but true background wake-up needs the
+HealthKit background-delivery entitlement, which free provisioning cannot carry —
+so it only fires while the app is running. Nothing depends on it.
+
 ## Status
 
 Verified in the simulator: onboarding, plan generation and editing, the session

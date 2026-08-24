@@ -219,6 +219,10 @@ struct FeaturesSettingsView: View {
                 Task {
                     let granted = await store.health.requestAuthorisation()
                     store.settings.healthKitEnabled = granted
+                    if granted {
+                        store.startHealthObservation()
+                        await store.importFromHealth()
+                    }
                     if !granted {
                         permissionMessage = store.health.lastError
                             ?? "Health access was not granted. You can change this in the Health app under Sharing."

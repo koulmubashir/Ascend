@@ -1,23 +1,32 @@
 import SwiftUI
 import AscendKit
 
+/// Everything you have done, wherever it was recorded.
+///
+/// Workouts logged in other apps appear alongside our own once Health is on,
+/// visibly attributed rather than silently mixed in - so the list is complete
+/// without pretending this app did the work.
 struct HistoryView: View {
     @EnvironmentObject private var store: AppStore
+
+    private var entries: [HealthSync.HistoryEntry] { store.combinedHistory }
 
     var body: some View {
         NavigationStack {
             Group {
-                if store.sessions.isEmpty {
+                if entries.isEmpty {
                     empty
                 } else {
-                    List(store.sessions.sorted { $0.startedAt > $1.startedAt }) { session in
-                        row(for: session)
+                    List(entries) { entry in
+                        row(for: entry)
                     }
                     .listStyle(.plain)
+                    .refreshable { await store.importFromHealth() }
                 }
             }
             .navigationTitle("History")
         }
+        .task { await store.importFromHealth() }
     }
 
     private var empty: some View {
@@ -33,7 +42,21 @@ struct HistoryView: View {
         }
     }
 
-    private func row(for session: WorkoutSession) -> some View {
+    @ViewBuilder
+    private func row(for entry: HealthSync.HistoryEntry) -> some View {
+        if let session = session(for: entry) {
+            ownRow(for: session)
+        } else {
+            importedRow(for: entry)
+        }
+    }
+
+    private func session(for entry: HealthSync.HistoryEntry) -> WorkoutSession? {
+        guard let id = entry.sessionID else { return nil }
+        return store.sessions.first { $0.id == id }
+    }
+
+    private func ownRow(for session: WorkoutSession) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             HStack {
                 Text(session.startedAt.formatted(.dateTime.weekday(.wide).month().day()))
@@ -54,6 +77,35 @@ struct HistoryView: View {
             }
         }
         .padding(.vertical, 3)
+    }
+
+    /// Dimmed and attributed, so it never reads as one of your logged sessions.
+    private func importedRow(for entry: HealthSync.HistoryEntry) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack {
+                Text(entry.date.formatted(.dateTime.weekday(.wide).month().day()))
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Image(systemName: "heart.text.square")
+                    .foregroundStyle(.secondary)
+            }
+            Text(entry.title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            if let source = entry.detail {
+                Text("From \(appName(from: source))")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.vertical, 3)
+    }
+
+    /// A bundle identifier is what dedup needs, but not what anyone wants to
+    /// read - show the last component, which is close enough to the app name.
+    private func appName(from bundleIdentifier: String) -> String {
+        bundleIdentifier.split(separator: ".").last.map(String.init) ?? bundleIdentifier
     }
 
     private func detail(for session: WorkoutSession) -> String {

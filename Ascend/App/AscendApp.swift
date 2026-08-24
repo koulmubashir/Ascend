@@ -13,7 +13,13 @@ struct AscendApp: App {
                 .onChange(of: scenePhase) { phase in
                     // Lock Screen buttons leave a note for the app rather than
                     // mutating session state from another process.
-                    if phase == .active { store.applyPendingWidgetCommand() }
+                    if phase == .active {
+                        store.applyPendingWidgetCommand()
+                        // Health's background delivery is best effort, so also
+                        // import on every foreground rather than relying on it.
+                        store.startHealthObservation()
+                        Task { await store.importFromHealth() }
+                    }
                 }
         }
     }

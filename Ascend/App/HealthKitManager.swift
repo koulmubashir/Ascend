@@ -24,7 +24,13 @@ final class HealthKitManager: ObservableObject {
     /// samples - and avoids hardcoding device checks that go stale.
     private var readTypes: Set<HKObjectType> {
         var types: Set<HKObjectType> = [HKObjectType.workoutType()]
-        for identifier: HKQuantityTypeIdentifier in [.heartRate, .oxygenSaturation, .activeEnergyBurned] {
+        for identifier: HKQuantityTypeIdentifier in [
+            .heartRate, .oxygenSaturation, .activeEnergyBurned,
+            // Read back what other apps and scales record, so this app is not
+            // an island inside Health.
+            .bodyMass, .bodyFatPercentage, .waistCircumference,
+            .dietaryProtein, .dietaryWater
+        ] {
             if let type = HKQuantityType.quantityType(forIdentifier: identifier) {
                 types.insert(type)
             }
@@ -134,6 +140,118 @@ final class HealthKitManager: ObservableObject {
                 continuation.resume(returning: (samples as? [HKQuantitySample])?.first)
             }
             store.execute(query)
+        }
+    }
+
+    // MARK: - Importing
+
+    /// Workouts Health knows about. Filtering out our own happens in
+    /// `HealthSync`, which is unit tested - this only fetches.
+    func importableWorkouts(since: Date) async -> [ImportedWorkout] {
+        let predicate = HKQuery.predicateForSamples(withStart: since, end: Date())
+
+        return await withCheckedContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: HKObjectType.workoutType(),
+                predicate: predicate,
+                limit: 100,
+                sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]
+            ) { _, samples, _ in
+                let workouts = (samples as? [HKWorkout] ?? []).map { workout in
+                    ImportedWorkout(
+                        healthKitID: workout.uuid,
+                        activityName: Self.name(for: workout.workoutActivityType),
+                        startedAt: workout.startDate,
+                        duration: workout.duration,
+                        // The bundle identifier, not the display name - it is
+                        // what reliably identifies our own writes.
+                        sourceName: workout.sourceRevision.source.bundleIdentifier,
+                        energyKilocalories: nil
+                    )
+                }
+                continuation.resume(returning: workouts)
+            }
+            store.execute(query)
+        }
+    }
+
+    /// Latest body measurements recorded anywhere - a smart scale, another app,
+    /// or the Health app itself.
+    func importableMeasurements() async -> [BodyMeasurement] {
+        var found: [BodyMeasurement] = []
+
+        let mapping: [(HKQuantityTypeIdentifier, MeasurementKind, HKUnit)] = [
+            (.bodyMass, .bodyWeight, .gramUnit(with: .kilo)),
+            (.bodyFatPercentage, .bodyFat, .percent()),
+            (.waistCircumference, .waist, .meterUnit(with: .centi))
+        ]
+
+        for (identifier, kind, unit) in mapping {
+            guard let type = HKQuantityType.quantityType(forIdentifier: identifier),
+                  let sample = await mostRecent(of: type)
+            else { continue }
+
+            var value = sample.quantity.doubleValue(for: unit)
+            if kind == .bodyFat { value *= 100 }
+
+            found.append(BodyMeasurement(kind: kind, value: value, recordedAt: sample.endDate))
+        }
+        return found
+    }
+
+    /// Protein and water logged elsewhere today, so the intake totals reflect
+    /// everything rather than only what was typed into this app.
+    func dietaryTotalToday(_ kind: IntakeKind) async -> Double? {
+        let identifier: HKQuantityTypeIdentifier = kind == .protein ? .dietaryProtein : .dietaryWater
+        guard let type = HKQuantityType.quantityType(forIdentifier: identifier) else { return nil }
+
+        let start = Calendar.current.startOfDay(for: Date())
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: Date())
+        let unit: HKUnit = kind == .protein ? .gram() : .literUnit(with: .milli)
+
+        return await withCheckedContinuation { continuation in
+            let query = HKStatisticsQuery(
+                quantityType: type, quantitySamplePredicate: predicate, options: .cumulativeSum
+            ) { _, statistics, _ in
+                continuation.resume(returning: statistics?.sumQuantity()?.doubleValue(for: unit))
+            }
+            store.execute(query)
+        }
+    }
+
+    /// Asks Health to wake the app when new workouts land, so imports happen
+    /// without the user opening the app first.
+    ///
+    /// Best effort by design. iOS decides when to deliver and may not for
+    /// hours, and true background wake-up additionally needs the HealthKit
+    /// background-delivery entitlement, which a free provisioning profile
+    /// cannot carry - without it the observer only fires while the app runs.
+    /// Nothing depends on it either way: the app also imports on every
+    /// foreground, which is what actually keeps history current.
+    func enableBackgroundDelivery(onChange: @escaping () -> Void) {
+        let type = HKObjectType.workoutType()
+        store.enableBackgroundDelivery(for: type, frequency: .hourly) { _, _ in }
+
+        let observer = HKObserverQuery(sampleType: type, predicate: nil) { _, completion, _ in
+            onChange()
+            // Must always be called, or HealthKit stops delivering.
+            completion()
+        }
+        store.execute(observer)
+    }
+
+    private static func name(for type: HKWorkoutActivityType) -> String {
+        switch type {
+        case .traditionalStrengthTraining, .functionalStrengthTraining: return "Strength training"
+        case .running:      return "Run"
+        case .walking:      return "Walk"
+        case .cycling:      return "Cycle"
+        case .swimming:     return "Swim"
+        case .highIntensityIntervalTraining: return "HIIT"
+        case .yoga:         return "Yoga"
+        case .rowing:       return "Row"
+        case .hiking:       return "Hike"
+        default:            return "Workout"
         }
     }
 

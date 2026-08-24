@@ -20,7 +20,10 @@ final class WatchMotionMonitor: ObservableObject {
 
     private let motion = CMMotionManager()
     private var counter = RepCounter()
-    private let sampleRate: Double = 50
+    /// 25Hz, not 50. Reps happen at roughly 0.5-3Hz, so 25 samples a second is
+    /// well above what counting needs and halves the wake-ups the motion
+    /// coprocessor causes. Battery on a Watch is the scarcest thing there is.
+    private let sampleRate: Double = 25
 
     static var isAvailable: Bool { CMMotionManager().isDeviceMotionAvailable }
 
@@ -50,6 +53,14 @@ final class WatchMotionMonitor: ObservableObject {
     }
 
     func stop() {
+        motion.stopDeviceMotionUpdates()
+        isRunning = false
+    }
+
+    /// Suspends sampling during rest. Nothing worth counting happens between
+    /// sets, and rest is often the longer half of a session.
+    func pause() {
+        guard isRunning else { return }
         motion.stopDeviceMotionUpdates()
         isRunning = false
     }

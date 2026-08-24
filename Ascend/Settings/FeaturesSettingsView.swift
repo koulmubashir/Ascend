@@ -154,7 +154,7 @@ struct FeaturesSettingsView: View {
                 }
             }
             .navigationTitle("Settings")
-            .onChange(of: store.settings) { _ in store.save() }
+            .onChange(of: store.settings) { _ in store.saveAndSync() }
             .fileExporter(
                 isPresented: $exporting,
                 document: BackupDocument(data: store.exportData() ?? Data()),

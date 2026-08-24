@@ -73,7 +73,7 @@ extension AppStore {
         plan = outcome.plan
         schedule = outcome.schedule
         lastEditAffectedFutureDays = outcome.updatedInstances
-        save()
+        saveAndSync()
     }
 
     func renameDay(_ workout: ScheduledWorkout, to name: String) {

@@ -195,12 +195,10 @@
 				AA0000000000000000000023 /* Sources */,
 				AA0000000000000000000024 /* Frameworks */,
 				AA0000000000000000000025 /* Resources */,
-				AA000000000000000000004B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				AA000000000000000000004D /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				AA0000000000000000000021 /* AscendWatch */,
@@ -300,7 +298,6 @@
 				AA0000000000000000000002 /* Ascend */,
 				AA0000000000000000000020 /* AscendWatch */,
 				AA0000000000000000000030 /* AscendWidget */,
-				AA0000000000000000000040 /* AscendWatchWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -449,6 +446,8 @@
 				DEVELOPMENT_TEAM = ABQ9V4BKWL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Ascend;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your heart rate, blood oxygen and wrist temperature alongside your workouts.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Saves your workouts to Apple Health so they count toward your Activity rings.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -480,6 +479,8 @@
 				DEVELOPMENT_TEAM = ABQ9V4BKWL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Ascend;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your heart rate, blood oxygen and wrist temperature alongside your workouts.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Saves your workouts to Apple Health so they count toward your Activity rings.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -622,11 +623,11 @@
 		AA0000000000000000000047 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AscendWatchWidget/AscendWatchWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ABQ9V4BKWL;
 				GENERATE_INFOPLIST_FILE = YES;
-				CODE_SIGN_ENTITLEMENTS = AscendWatchWidget/AscendWatchWidget.entitlements;
 				INFOPLIST_FILE = "AscendWatchWidget-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Ascend;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -635,7 +636,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mubashirkoul.Ascend.watchkitapp.complication;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mubashirkoul.Ascend.watchkitapp.face;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -649,11 +650,11 @@
 		AA0000000000000000000048 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AscendWatchWidget/AscendWatchWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ABQ9V4BKWL;
 				GENERATE_INFOPLIST_FILE = YES;
-				CODE_SIGN_ENTITLEMENTS = AscendWatchWidget/AscendWatchWidget.entitlements;
 				INFOPLIST_FILE = "AscendWatchWidget-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Ascend;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -662,7 +663,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mubashirkoul.Ascend.watchkitapp.complication;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mubashirkoul.Ascend.watchkitapp.face;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;

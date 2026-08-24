@@ -154,10 +154,17 @@ final class WatchStore: NSObject, ObservableObject {
         let effects = m.handle(event)
         machine = m
 
+        // Resume sampling only when actually lifting again.
+        if case .exercising = m.state, plan?.repCountingEnabled == true, !motion.isRunning {
+            motion.start()
+        }
+
         for effect in effects {
             switch effect {
             case let .startRestTimer(seconds):
                 startRestTimer(seconds: seconds)
+                // No reps happen during rest, so stop sampling motion.
+                motion.pause()
             case .cancelRestTimer:
                 stopRestTimer()
             case let .haptic(kind):

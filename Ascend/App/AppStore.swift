@@ -90,11 +90,18 @@ final class AppStore: ObservableObject {
         let newPlan = WorkoutPlan(daysPerWeek: daysPerWeek, trainingDays: days)
         plan = newPlan
         schedule = PlanBuilder.schedule(days: days, startingAfter: Date())
-        save()
+        saveAndSync()
     }
 
-    /// Re-registers reminders against the current schedule. Cheap and
-    /// idempotent, so it is called after anything that moves a workout.
+    /// Persists and re-syncs everything downstream of the plan. Use only when
+    /// the schedule, plan or settings actually changed.
+    func saveAndSync() {
+        save()
+        syncNotifications()
+    }
+
+    /// Re-registers reminders and re-pushes the plan to the Watch. Expensive -
+    /// call it when the schedule or settings change, not on every write.
     func syncNotifications() {
         NotificationScheduler.sync(schedule: schedule, settings: settings)
         NotificationScheduler.syncIntakeReminders(settings: settings)
@@ -114,7 +121,7 @@ final class AppStore: ObservableObject {
         activeSession = nil
         machine = nil
         settings = FeatureSettings()
-        save()
+        saveAndSync()
     }
 
     // MARK: - Today
@@ -431,7 +438,9 @@ final class AppStore: ObservableObject {
         watch.sendNoActiveSession()
         liveActivity.end()
         publishWidgetSnapshot()
-        save()
+        // Finishing changes the schedule - status, and possibly a makeup day -
+        // so this is one of the few writes that genuinely needs the full sync.
+        saveAndSync()
 
         if settings.healthKitEnabled {
             Task {
@@ -585,8 +594,13 @@ final class AppStore: ObservableObject {
         measurements = snapshot.measurements ?? []
     }
 
+    /// Persists only.
+    ///
+    /// Deliberately does *not* re-register notifications or push the plan to
+    /// the Watch. Those are expensive - a full notification rebuild plus a
+    /// whole-plan WCSession transfer - and logging a set changes neither. A
+    /// twelve set workout used to do both twelve times over.
     func save() {
-        syncNotifications()
         let snapshot = makeSnapshot()
         do {
             let data = try JSONEncoder().encode(snapshot)

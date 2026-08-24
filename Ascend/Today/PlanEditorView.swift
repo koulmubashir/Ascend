@@ -56,6 +56,18 @@ struct PlanEditorView: View {
                             Label("Add exercise", systemImage: "plus")
                         }
                     }
+
+                    Section {
+                        Picker("Changes apply to", selection: $store.editScope) {
+                            Text("Every \(day.name) day").tag(PlanEditor.Scope.series)
+                            Text("Only this one").tag(PlanEditor.Scope.thisDayOnly)
+                        }
+                        .pickerStyle(.inline)
+                    } footer: {
+                        Text(store.editScope == .series
+                             ? "Updates your plan and every future \(day.name) day. Workouts you have already done are left as they were."
+                             : "Changes only the session on this date.")
+                    }
                 }
             }
             .environment(\.editMode, .constant(.active))

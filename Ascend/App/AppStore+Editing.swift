@@ -53,6 +53,8 @@ extension AppStore {
 
     // MARK: - Plan editing
 
+    /// Applies an edit through `PlanEditor` so it reaches the plan template and
+    /// every future instance, not just the one scheduled day the user opened.
     private func withTrainingDay(
         _ workoutID: UUID,
         _ body: (inout TrainingDay) -> Void
@@ -60,7 +62,17 @@ extension AppStore {
         guard let index = schedule.firstIndex(where: { $0.id == workoutID }) else { return }
         var day = schedule[index].trainingDay
         body(&day)
-        schedule[index].trainingDay = day
+
+        let outcome = PlanEditor.apply(
+            day,
+            plan: plan,
+            schedule: schedule,
+            editing: workoutID,
+            scope: editScope
+        )
+        plan = outcome.plan
+        schedule = outcome.schedule
+        lastEditAffectedFutureDays = outcome.updatedInstances
         save()
     }
 

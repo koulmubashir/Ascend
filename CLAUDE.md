@@ -23,9 +23,10 @@ swift test --package-path Packages/AscendKit --filter RepCounterTests/testCounts
 xcodebuild -project Ascend.xcodeproj -scheme Ascend \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
 
-# Build the Watch app alone
-xcodebuild -project Ascend.xcodeproj -scheme AscendWatch \
-  -destination 'platform=watchOS Simulator,name=Apple Watch Ultra 3 (49mm)' build
+# Build the Watch app — use the script, not xcodebuild directly.
+# Incremental builds leave the complication unsigned and then fail; the script
+# deletes the stale appex first. See Known gaps.
+./build.sh AscendWatch
 
 # Install and run, with debug launch hooks (DEBUG builds only)
 xcrun simctl install <device-udid> \
@@ -49,7 +50,7 @@ design/export-bodymaps.sh          # rewrites the ten PNGs from design/bodymap.h
 **`Packages/AscendKit` holds everything testable without a device.** Models, the
 session engine, scheduling, progression, notification planning, rep counting,
 and the Watch sync payloads. It is pure Swift with no UIKit, SwiftUI, HealthKit
-or ActivityKit, which is what lets 113 tests run in under a second from the
+or ActivityKit, which is what lets 120 tests run in under a second from the
 command line. Put logic here by default; put only rendering and system-framework
 plumbing in the app targets.
 
@@ -112,16 +113,22 @@ certificate as the parent app".
   knows, and wrist-based classification is the unreliable part.
 - **iCloud is a backup, not sync.** Last writer wins; concurrent edits are not
   reconciled.
+- **Plan edits default to the whole series.** `PlanEditor` writes through to the
+  `WorkoutPlan` template and every *upcoming* instance, but never to completed,
+  missed or makeup days — history records what you did, not what the plan says
+  now.
 - **Live Activity updates fire only on real state changes.** The rest countdown
   uses `Text(timerInterval:)` so the system ticks it — per-second `Activity
   .update()` calls get throttled and freeze.
 
 ## Known gaps
 
-- Plan edits apply to a single `ScheduledWorkout`, not the `TrainingDay`
-  template, so next week's copy of the same day is unchanged.
-- The Watch advances sets with a button; swipe is used for paging between
-  screens.
+- **Incremental Watch builds fail to sign `AscendWatchWidget.appex`**, and the
+  stale unsigned artifact then makes every later build fail identically. Use `./build.sh`,
+  which removes it first. Affects the Ascend scheme too, since the phone app
+  embeds the Watch app. A non-empty entitlements file,
+  `CODE_SIGN_IDENTITY[sdk=watchsimulator*] = "-"`, and `CODE_SIGNING_REQUIRED`
+  were each tried and none fixed it; root cause not established.
 - No superset support in the session engine.
 - The iCloud entitlement is deliberately absent — see `ICLOUD-SETUP.md`.
 - `_attic/` holds an unused parallel UI implementation, kept for reference.

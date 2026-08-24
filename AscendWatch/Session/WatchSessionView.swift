@@ -1,15 +1,19 @@
 import SwiftUI
 import AscendKit
 
-/// The in-workout screen. Swipe left to log the set, right to go back a page.
+/// The in-workout screen. Swipe left or right to log the set and start resting.
 ///
-/// A `TabView` in page style is the idiomatic watchOS swipe, and it means the
-/// gesture is handled by the system rather than a custom `DragGesture` that
-/// would fight the Digital Crown and the back swipe.
+/// One page rather than a paged `TabView`: paging consumed the horizontal
+/// gesture, and logging a set by swiping is the whole point of running this on
+/// a wrist. Reps go on the Digital Crown, which frees the swipe entirely.
+///
+/// The button stays. A swipe is not discoverable and is unusable with
+/// VoiceOver, so it is an accelerator rather than the only way through.
 struct WatchSessionView: View {
     @EnvironmentObject private var store: WatchStore
     @State private var reps = 10
     @State private var weight: Double = 20
+    @State private var crownReps: Double = 10
 
     var body: some View {
         Group {
@@ -33,11 +37,32 @@ struct WatchSessionView: View {
     // MARK: - Exercising
 
     private var exercising: some View {
-        TabView {
-            liftPage
-            inputPage
-        }
-        .tabViewStyle(.page)
+        liftPage
+            .focusable()
+            .digitalCrownRotation(
+                $crownReps,
+                from: 1, through: 50, by: 1,
+                sensitivity: .low,
+                isContinuous: false
+            )
+            .onChange(of: crownReps) { value in
+                reps = max(1, Int(value.rounded()))
+            }
+            .gesture(
+                DragGesture(minimumDistance: 40)
+                    .onEnded { value in
+                        // Either direction logs the set - asking someone to
+                        // remember which way costs more than it saves.
+                        guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                        logSet()
+                    }
+            )
+    }
+
+    private func logSet() {
+        let counted = store.motion.reps
+        store.completeSet(reps: counted > 0 ? counted : reps,
+                          weightKg: weight > 0 ? weight : nil)
     }
 
     private var liftPage: some View {
@@ -70,50 +95,36 @@ struct WatchSessionView: View {
                         .foregroundStyle(store.motion.setLooksFinished ? Color.orange : .secondary)
                 }
 
-                Button {
-                    // Prefer what the wrist counted, falling back to the target.
-                    let counted = store.motion.reps
-                    store.completeSet(reps: counted > 0 ? counted : reps,
-                                      weightKg: weight > 0 ? weight : nil)
-                } label: {
+                HStack(spacing: 6) {
+                    Button {
+                        weight = max(0, weight - 2.5)
+                    } label: {
+                        Image(systemName: "minus")
+                    }
+                    .buttonStyle(.bordered)
+
+                    Text("\(reps) x \(weight.formatted(.number.precision(.fractionLength(0...1))))kg")
+                        .font(.caption)
+                        .monospacedDigit()
+                        .frame(maxWidth: .infinity)
+
+                    Button {
+                        weight += 2.5
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .buttonStyle(.bordered)
+                }
+
+                Button(action: logSet) {
                     Text("Set done")
                         .frame(maxWidth: .infinity)
                 }
                 .tint(.orange)
+                .accessibilityHint("Or swipe left or right")
             }
         }
         .padding(.horizontal, 4)
-    }
-
-    /// Second page rather than crammed onto the first - the Watch screen cannot
-    /// carry the map, the name and two steppers at a readable size.
-    private var inputPage: some View {
-        VStack(spacing: 10) {
-            stepper(label: "Reps", value: "\(reps)") { reps = max(1, reps + $0) }
-            stepper(label: "kg", value: weight.formatted(.number.precision(.fractionLength(0...1)))) {
-                weight = max(0, weight + Double($0) * 2.5)
-            }
-        }
-        .padding(.horizontal, 6)
-    }
-
-    private func stepper(label: String, value: String, onChange: @escaping (Int) -> Void) -> some View {
-        VStack(spacing: 2) {
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-            HStack {
-                Button { onChange(-1) } label: { Image(systemName: "minus") }
-                    .buttonStyle(.bordered)
-                Text(value)
-                    .font(.title3.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-                Button { onChange(1) } label: { Image(systemName: "plus") }
-                    .buttonStyle(.bordered)
-            }
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(label) \(value)")
     }
 
     // MARK: - Resting
@@ -180,6 +191,7 @@ struct WatchSessionView: View {
     private func prime() {
         guard let exercise = store.currentExercise else { return }
         reps = exercise.targetReps
+        crownReps = Double(exercise.targetReps)
         if let suggested = exercise.suggestedWeightKg { weight = suggested }
     }
 

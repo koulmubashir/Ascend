@@ -12,7 +12,7 @@ final class AppStore: ObservableObject {
 
     // MARK: - Persisted state
 
-    @Published private(set) var plan: WorkoutPlan?
+    @Published internal(set) var plan: WorkoutPlan?
     /// internal(set) rather than private(set) so the plan-editing extension in
     /// AppStore+Editing.swift can write it - `private` is file-scoped in Swift.
     /// Mutate through the editing methods, not directly from views.
@@ -25,6 +25,12 @@ final class AppStore: ObservableObject {
     /// future library update cannot clobber them.
     @Published var customExercises: [Exercise] = []
     @Published internal(set) var measurements: [BodyMeasurement] = []
+    /// Whether plan edits apply to one day or the whole recurring series.
+    /// Series is the default because "edit my Push day" almost always means
+    /// every Push day.
+    @Published var editScope: PlanEditor.Scope = .series
+    /// How many future days the last edit reached, for a confirmation line.
+    @Published var lastEditAffectedFutureDays = 0
     @Published var settings = FeatureSettings()
 
     let library = ExerciseLibrary.starter

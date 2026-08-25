@@ -2,7 +2,9 @@ import Foundation
 
 /// What is being logged. Protein and water share a shape - an amount at a
 /// moment - so they share a type rather than duplicating one per nutrient.
-public enum IntakeKind: String, Codable, CaseIterable, Sendable {
+public enum IntakeKind: String, Codable, CaseIterable, Identifiable, Sendable {
+    public var id: String { rawValue }
+
     case protein
     case water
 

@@ -13,6 +13,28 @@ struct PlanEditorView: View {
 
     /// Re-read from the store so edits show immediately rather than against the
     /// copy this view was handed.
+    private func ordered(_ day: TrainingDay) -> [PlannedExercise] {
+        day.plannedExercises.sorted { $0.orderIndex < $1.orderIndex }
+    }
+
+    /// True when this exercise runs straight after the one above it with no
+    /// rest between - which is what makes the pair a superset.
+    private func isJoinedToPrevious(_ planned: PlannedExercise, in day: TrainingDay) -> Bool {
+        let list = ordered(day)
+        guard let tag = planned.supersetTag,
+              let index = list.firstIndex(where: { $0.id == planned.id }),
+              index > 0
+        else { return false }
+        return list[index - 1].supersetTag == tag
+    }
+
+    private func detail(for planned: PlannedExercise, in day: TrainingDay) -> String {
+        let base = "\(planned.targetSets) x \(planned.targetReps)"
+        return isJoinedToPrevious(planned, in: day)
+            ? "\(base) · no rest, superset"
+            : "\(base) · \(planned.restSeconds)s rest"
+    }
+
     private var current: ScheduledWorkout? {
         store.schedule.first { $0.id == workout.id }
     }
@@ -22,15 +44,23 @@ struct PlanEditorView: View {
             List {
                 if let day = current?.trainingDay {
                     Section {
-                        ForEach(day.plannedExercises.sorted(by: { $0.orderIndex < $1.orderIndex })) { planned in
+                        ForEach(ordered(day)) { planned in
                             NavigationLink {
                                 TargetEditorView(planned: planned, workout: workout)
                             } label: {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(planned.exercise.name)
-                                    Text("\(planned.targetSets) x \(planned.targetReps) · \(planned.restSeconds)s rest")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                HStack(spacing: 10) {
+                                    if isJoinedToPrevious(planned, in: day) {
+                                        Image(systemName: "link")
+                                            .font(.caption2)
+                                            .foregroundStyle(.orange)
+                                            .accessibilityLabel("Supersetted with the exercise above")
+                                    }
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(planned.exercise.name)
+                                        Text(detail(for: planned, in: day))
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
                                 }
                             }
                         }
@@ -46,7 +76,7 @@ struct PlanEditorView: View {
                     } header: {
                         Text("Exercises")
                     } footer: {
-                        Text("Drag to reorder. Swipe to remove.")
+                        Text("Drag to reorder. Swipe to remove. Tap an exercise to set targets or superset it with the one above.")
                     }
 
                     Section {
@@ -70,14 +100,19 @@ struct PlanEditorView: View {
                     }
                 }
             }
-            .environment(\.editMode, .constant(.active))
+            // Not pinned to .active: an always-on edit mode swallows taps on
+            // the rows, which left the per-exercise editor unreachable. Reorder
+            // is behind the Edit button instead; delete still works by swipe.
             .navigationTitle(current?.trainingDay.name ?? "Day")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }
                 }
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItem(placement: .topBarTrailing) {
+                    EditButton()
+                }
+                ToolbarItem(placement: .topBarTrailing) {
                     Button("Rename") {
                         draftName = current?.trainingDay.name ?? ""
                         renaming = true
@@ -109,6 +144,24 @@ struct TargetEditorView: View {
             .first { $0.id == planned.id } ?? planned
     }
 
+    private var ordered: [PlannedExercise] {
+        (store.schedule.first { $0.id == workout.id }?.trainingDay.plannedExercises ?? [])
+            .sorted { $0.orderIndex < $1.orderIndex }
+    }
+
+    /// A superset is a run of neighbours, so only the exercise directly above
+    /// can be joined to.
+    private var exerciseAbove: PlannedExercise? {
+        guard let index = ordered.firstIndex(where: { $0.id == planned.id }), index > 0
+        else { return nil }
+        return ordered[index - 1]
+    }
+
+    private var isSupersetted: Bool {
+        guard let tag = current.supersetTag, let above = exerciseAbove else { return false }
+        return above.supersetTag == tag
+    }
+
     var body: some View {
         Form {
             Section {
@@ -128,6 +181,19 @@ struct TargetEditorView: View {
                 ), in: 0...300, step: 15)
             } header: {
                 Text("Targets")
+            }
+
+            if let above = exerciseAbove {
+                Section {
+                    Toggle("Superset with \(above.exercise.name)", isOn: Binding(
+                        get: { isSupersetted },
+                        set: { _ in store.toggleSuperset(planned, in: workout) }
+                    ))
+                } footer: {
+                    Text(isSupersetted
+                         ? "Run back to back with \(above.exercise.name), resting only once the round is done."
+                         : "Run this straight after \(above.exercise.name) with no rest between.")
+                }
             }
 
             Section {

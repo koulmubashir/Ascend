@@ -12,25 +12,25 @@ final class AppStore: ObservableObject {
 
     // MARK: - Persisted state
 
-    @Published internal(set) var plan: WorkoutPlan?
-    /// internal(set) rather than private(set) so the plan-editing extension in
+    @Published var plan: WorkoutPlan?
+    /// Left settable rather than private(set) so the plan-editing extension in
     /// AppStore+Editing.swift can write it - `private` is file-scoped in Swift.
     /// Mutate through the editing methods, not directly from views.
-    @Published internal(set) var schedule: [ScheduledWorkout] = []
-    @Published internal(set) var sessions: [WorkoutSession] = []
+    @Published var schedule: [ScheduledWorkout] = []
+    @Published var sessions: [WorkoutSession] = []
     @Published private(set) var records: [ProgressiveOverloadEngine.PersonalRecord] = []
     @Published private(set) var intake: [IntakeEntry] = []
     @Published private(set) var vitals: [VitalsSample] = []
     /// Exercises the user created, kept separate from the seeded library so a
     /// future library update cannot clobber them.
     @Published var customExercises: [Exercise] = []
-    @Published internal(set) var measurements: [BodyMeasurement] = []
+    @Published var measurements: [BodyMeasurement] = []
     /// Workouts recorded by other apps, kept apart from our own sessions so
     /// they can never be confused with them.
-    @Published internal(set) var importedWorkouts: [ImportedWorkout] = []
+    @Published var importedWorkouts: [ImportedWorkout] = []
     /// Today's protein and water totals as Health sees them, including other
     /// apps. Not persisted - it is a view of Health, re-read each time.
-    @Published internal(set) var externalIntake: [IntakeKind: Double] = [:]
+    @Published var externalIntake: [IntakeKind: Double] = [:]
     /// Guards against registering the Health observer more than once.
     internal var isObservingHealth = false
     /// Whether plan edits apply to one day or the whole recurring series.

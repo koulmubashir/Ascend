@@ -1,7 +1,9 @@
 import Foundation
 
 /// Something you measure about yourself, rather than about a workout.
-public enum MeasurementKind: String, Codable, CaseIterable, Sendable {
+public enum MeasurementKind: String, Codable, CaseIterable, Identifiable, Sendable {
+    public var id: String { rawValue }
+
     case bodyWeight
     case waist
     case chest

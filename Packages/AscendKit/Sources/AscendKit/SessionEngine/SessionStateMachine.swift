@@ -78,6 +78,13 @@ public struct SessionStateMachine: Sendable {
                 return effects
             }
 
+            // Moving to the next exercise inside a superset means no rest - the
+            // whole point is to run them back to back.
+            if staysWithinSuperset(from: exerciseIndex, to: next.exerciseIndex) {
+                state = .exercising(exerciseIndex: next.exerciseIndex, setIndex: next.setIndex)
+                return effects
+            }
+
             // Rest length comes from the exercise just finished, not the next
             // one - the rest belongs to the effort that was just made.
             let rest = current.restSeconds
@@ -110,8 +117,27 @@ public struct SessionStateMachine: Sendable {
     }
 
     /// Next (exercise, set) pair, or nil when the session is finished.
+    ///
+    /// A standalone exercise is taken to completion before moving on. A
+    /// superset instead cycles through its members once per round, so set two
+    /// of the first exercise only comes after set one of the last.
     private func advance(from exerciseIndex: Int, setIndex: Int) -> (exerciseIndex: Int, setIndex: Int)? {
         let current = exercises[exerciseIndex]
+
+        if let group = supersetRange(containing: exerciseIndex) {
+            if exerciseIndex + 1 < group.upperBound {
+                return (exerciseIndex + 1, setIndex)
+            }
+            // Round finished. Back to the top of the superset for the next set.
+            if setIndex + 1 < setsInSuperset(group) {
+                return (group.lowerBound, setIndex + 1)
+            }
+            if group.upperBound < exercises.count {
+                return (group.upperBound, 0)
+            }
+            return nil
+        }
+
         if setIndex + 1 < current.targetSets {
             return (exerciseIndex, setIndex + 1)
         }
@@ -119,6 +145,32 @@ public struct SessionStateMachine: Sendable {
             return (exerciseIndex + 1, 0)
         }
         return nil
+    }
+
+    /// The contiguous run of exercises sharing a superset tag, or nil when the
+    /// exercise stands alone.
+    private func supersetRange(containing index: Int) -> Range<Int>? {
+        guard let tag = exercises[index].supersetTag else { return nil }
+
+        var lower = index
+        while lower > 0, exercises[lower - 1].supersetTag == tag { lower -= 1 }
+
+        var upper = index
+        while upper + 1 < exercises.count, exercises[upper + 1].supersetTag == tag { upper += 1 }
+
+        // A tag on a single exercise is not a superset, just a stray label.
+        return lower == upper ? nil : lower..<(upper + 1)
+    }
+
+    /// Members can disagree on set count; the shortest governs the round so no
+    /// exercise is left mid-superset.
+    private func setsInSuperset(_ group: Range<Int>) -> Int {
+        exercises[group].map(\.targetSets).min() ?? 0
+    }
+
+    private func staysWithinSuperset(from: Int, to: Int) -> Bool {
+        guard let group = supersetRange(containing: from) else { return false }
+        return group.contains(to) && to != group.lowerBound
     }
 
     // MARK: - Presentation helpers

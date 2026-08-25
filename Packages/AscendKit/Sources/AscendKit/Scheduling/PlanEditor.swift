@@ -76,6 +76,43 @@ public enum PlanEditor {
         return Outcome(plan: newPlan, schedule: newSchedule, updatedInstances: updated)
     }
 
+    /// Joins an exercise to the one above it, or separates it again.
+    ///
+    /// A superset is always a contiguous run, so pairing works on neighbours -
+    /// that keeps this and the session engine's traversal in agreement.
+    /// Returns the list unchanged when the exercise is missing or is first.
+    public static func toggleSuperset(
+        _ exerciseID: UUID,
+        in exercises: [PlannedExercise]
+    ) -> [PlannedExercise] {
+        var list = exercises.sorted { $0.orderIndex < $1.orderIndex }
+        guard let index = list.firstIndex(where: { $0.id == exerciseID }), index > 0 else {
+            return exercises
+        }
+
+        let previousTag = list[index - 1].supersetTag
+
+        if let tag = list[index].supersetTag, tag == previousTag {
+            list[index].supersetTag = nil
+            // Anything below that shared the tag is cut off from the run above,
+            // so it gets a fresh tag rather than silently rejoining across the
+            // gap this just opened.
+            let freshTag = nextSupersetTag(in: list)
+            for below in (index + 1)..<list.count where list[below].supersetTag == tag {
+                list[below].supersetTag = freshTag
+            }
+        } else {
+            let tag = previousTag ?? nextSupersetTag(in: list)
+            list[index - 1].supersetTag = tag
+            list[index].supersetTag = tag
+        }
+        return list
+    }
+
+    static func nextSupersetTag(in exercises: [PlannedExercise]) -> Int {
+        (exercises.compactMap(\.supersetTag).max() ?? 0) + 1
+    }
+
     public enum Scope: String, Equatable, Sendable {
         /// Just the day the user opened.
         case thisDayOnly

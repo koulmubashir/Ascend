@@ -240,7 +240,9 @@ final class HealthKitManager: ObservableObject {
         store.execute(observer)
     }
 
-    private static func name(for type: HKWorkoutActivityType) -> String {
+    /// Pure mapping, and it is read from HealthKit's background query handler,
+    /// so it must not inherit the class's main-actor isolation.
+    private nonisolated static func name(for type: HKWorkoutActivityType) -> String {
         switch type {
         case .traditionalStrengthTraining, .functionalStrengthTraining: return "Strength training"
         case .running:      return "Run"

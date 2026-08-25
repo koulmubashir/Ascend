@@ -105,6 +105,17 @@ extension AppStore {
         }
     }
 
+    /// Joins an exercise to the one above it, or separates it again.
+    ///
+    /// Supersets are always a contiguous run, so pairing works on neighbours
+    /// rather than letting any two exercises be linked from anywhere in the
+    /// list - that keeps the engine's traversal and this list in agreement.
+    func toggleSuperset(_ planned: PlannedExercise, in workout: ScheduledWorkout) {
+        withTrainingDay(workout.id) { day in
+            day.plannedExercises = PlanEditor.toggleSuperset(planned.id, in: day.plannedExercises)
+        }
+    }
+
     func moveExercises(in workout: ScheduledWorkout, from offsets: IndexSet, to destination: Int) {
         withTrainingDay(workout.id) { day in
             day.plannedExercises.sort { $0.orderIndex < $1.orderIndex }
@@ -159,7 +170,7 @@ extension AppStore {
     /// Volume per region over the last `days`, for spotting a neglected group.
     func volumeByRegion(days: Int = 28) -> [MuscleRegion: Double] {
         let start = Calendar.current.date(byAdding: .day, value: -days, to: Date()) ?? Date()
-        var combined = ExerciseLibrary(all: library.all + customExercises)
+        let combined = ExerciseLibrary(all: library.all + customExercises)
         return ProgressStats.volumeByRegion(
             logs: allSetLogs, library: combined, from: start, to: Date()
         )

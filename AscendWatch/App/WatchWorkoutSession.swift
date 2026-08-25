@@ -89,9 +89,12 @@ final class WatchWorkoutSession: NSObject, ObservableObject {
         guard let session, let builder else { return }
         let end = Date()
         session.end()
-        builder.endCollection(withEnd: end) { [weak self] _, _ in
+        // `self` is captured weakly on the Task rather than on the outer
+        // closure: capturing it further out makes it a mutable capture shared
+        // across two escaping HealthKit callbacks, which is a data race.
+        builder.endCollection(withEnd: end) { _, _ in
             builder.finishWorkout { _, _ in
-                Task { @MainActor in
+                Task { @MainActor [weak self] in
                     self?.session = nil
                     self?.builder = nil
                     self?.isRunning = false

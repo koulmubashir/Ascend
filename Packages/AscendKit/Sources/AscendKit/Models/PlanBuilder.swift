@@ -7,8 +7,12 @@ import Foundation
 public enum PlanBuilder {
 
     public static func trainingDays(forDaysPerWeek days: Int, library: ExerciseLibrary) -> [TrainingDay] {
+        let wanted = clamp(days)
         let split = Split.forDaysPerWeek(days)
-        return split.dayTemplates.enumerated().map { index, template in
+        // A split can offer more templates than were asked for - the full-body
+        // split carries two so that asking for two days gives two different
+        // sessions. Take only as many as the user wanted.
+        return split.dayTemplates.prefix(wanted).enumerated().map { index, template in
             TrainingDay(
                 name: template.name,
                 orderInWeek: index,
@@ -28,18 +32,22 @@ public enum PlanBuilder {
         guard !days.isEmpty else { return [] }
 
         // Spread the sessions across the week rather than stacking them up front,
-        // so rest days actually fall between training days.
-        let stride = max(1, 7 / days.count)
-        var result: [ScheduledWorkout] = []
-        var cursor = calendar.startOfDay(for: date)
+        // so rest days actually fall between training days. Integer division put
+        // every plan of four days or more on consecutive days and then rested
+        // for the remainder of the week, so the offsets are spaced against the
+        // full seven days and rounded instead.
+        let start = calendar.startOfDay(for: date)
+        let count = Double(days.count)
 
-        for day in days {
-            guard let next = calendar.date(byAdding: .day, value: stride, to: cursor) else { break }
-            cursor = next
-            result.append(ScheduledWorkout(trainingDay: day, scheduledDate: cursor))
+        return days.enumerated().compactMap { index, day in
+            let offset = Int((Double(index) * 7.0 / count).rounded()) + 1
+            guard let scheduledDate = calendar.date(byAdding: .day, value: offset, to: start) else { return nil }
+            return ScheduledWorkout(trainingDay: day, scheduledDate: scheduledDate)
         }
-        return result
     }
+
+    /// One through six. Below that there is no plan; above it there is no rest.
+    static func clamp(_ days: Int) -> Int { max(1, min(days, 6)) }
 
     static func plannedExercises(for groups: [MuscleGroup], library: ExerciseLibrary) -> [PlannedExercise] {
         var planned: [PlannedExercise] = []
@@ -72,10 +80,10 @@ public enum PlanBuilder {
     }
 
     enum Split {
-        case fullBody, upperLower, pushPullLegs, fourDay, fiveDay, sixDay
+        case fullBody, pushPullLegs, fourDay, fiveDay, sixDay
 
         static func forDaysPerWeek(_ days: Int) -> Split {
-            switch max(1, min(days, 6)) {
+            switch clamp(days) {
             case 1, 2: return .fullBody
             case 3:    return .pushPullLegs
             case 4:    return .fourDay
@@ -90,11 +98,6 @@ public enum PlanBuilder {
                 return [
                     DayTemplate(name: "Full body", groups: [.chest, .back, .legs, .core], bodyMapKey: .fullBody),
                     DayTemplate(name: "Full body", groups: [.shoulders, .arms, .legs, .core], bodyMapKey: .fullBody)
-                ]
-            case .upperLower:
-                return [
-                    DayTemplate(name: "Upper", groups: [.chest, .back, .shoulders, .arms], bodyMapKey: .push),
-                    DayTemplate(name: "Lower", groups: [.legs, .glutes, .core], bodyMapKey: .legs)
                 ]
             case .pushPullLegs:
                 return [

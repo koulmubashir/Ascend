@@ -55,13 +55,21 @@ public struct PlannedExercise: Identifiable, Hashable, Codable, Sendable {
     public var targetReps: Int
     public var restSeconds: Int
 
+    /// Exercises sharing a superset tag are performed back to back, with the
+    /// rest taken only once the round is done. `nil` - the common case - means
+    /// the exercise stands on its own.
+    ///
+    /// Optional so plans saved before supersets existed still decode.
+    public var supersetTag: Int?
+
     public init(
         id: UUID = UUID(),
         exercise: Exercise,
         orderIndex: Int,
         targetSets: Int? = nil,
         targetReps: Int? = nil,
-        restSeconds: Int? = nil
+        restSeconds: Int? = nil,
+        supersetTag: Int? = nil
     ) {
         self.id = id
         self.exercise = exercise
@@ -69,6 +77,7 @@ public struct PlannedExercise: Identifiable, Hashable, Codable, Sendable {
         self.targetSets = targetSets ?? exercise.defaultSets
         self.targetReps = targetReps ?? exercise.defaultReps
         self.restSeconds = restSeconds ?? exercise.defaultRestSeconds
+        self.supersetTag = supersetTag
     }
 
     public var exerciseID: UUID { exercise.id }

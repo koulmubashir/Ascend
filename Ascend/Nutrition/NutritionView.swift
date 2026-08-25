@@ -176,6 +176,3 @@ struct ManualIntakeSheet: View {
     }
 }
 
-extension IntakeKind: Identifiable {
-    public var id: String { rawValue }
-}

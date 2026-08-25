@@ -241,13 +241,18 @@ struct SessionView: View {
             enabled: store.settings.notificationsEnabled
         )
 
+        // The timer fires outside any actor, but both the countdown and the
+        // engine it drives belong to the main actor, so hop before touching
+        // either.
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            guard restRemaining > 0 else {
-                stopTimer()
-                store.send(.restElapsed)
-                return
+            Task { @MainActor in
+                guard restRemaining > 0 else {
+                    stopTimer()
+                    store.send(.restElapsed)
+                    return
+                }
+                restRemaining -= 1
             }
-            restRemaining -= 1
         }
     }
 

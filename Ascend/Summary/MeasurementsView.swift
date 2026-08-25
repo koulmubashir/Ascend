@@ -184,6 +184,3 @@ struct LogMeasurementSheet: View {
     }
 }
 
-extension MeasurementKind: Identifiable {
-    public var id: String { rawValue }
-}

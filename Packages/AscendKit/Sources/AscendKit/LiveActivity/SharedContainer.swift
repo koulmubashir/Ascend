@@ -37,17 +37,31 @@ public enum SharedSessionCommands {
         var issuedAt: Date
     }
 
+    /// Where the mailbox files live. Overridable so the expiry and
+    /// take-once rules can be tested - outside a provisioned app the real
+    /// App Group container is nil and every read and write silently does
+    /// nothing, which is precisely the behaviour worth having tests for.
+    static var containerOverride: URL?
+
     static func containerURL(named name: String) -> URL? {
-        FileManager.default
-            .containerURL(forSecurityApplicationGroupIdentifier: appGroup)?
-            .appendingPathComponent(name)
+        let base = containerOverride
+            ?? FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)
+        return base?.appendingPathComponent(name)
     }
 
     public static func write(_ command: SharedSessionCommand) {
+        write(command, issuedAt: Date())
+    }
+
+    static func write(_ command: SharedSessionCommand, issuedAt: Date) {
         guard let url = containerURL(named: "session-command.json") else { return }
-        let envelope = Envelope(command: command, issuedAt: Date())
+        let envelope = Envelope(command: command, issuedAt: issuedAt)
         try? JSONEncoder().encode(envelope).write(to: url, options: .atomic)
     }
+
+    /// How long a command stays actionable, exposed so tests can sit either
+    /// side of the boundary without hard-coding the number.
+    static var expiry: TimeInterval { maxAge }
 
     /// Reads and clears the pending command, if it is recent enough to act on.
     public static func take() -> SharedSessionCommand? {
